@@ -98,3 +98,10 @@ uint8_t kb_get_scancode() {
 	}
 	return 0; // no data
 }
+
+unsigned char loop_until_keypress() {
+	for (;;) {
+		char c = scancode_to_c(kb_get_scancode());
+		if (c) return c;
+	}
+}

@@ -24,3 +24,4 @@ void kb_flush_buf();
 char scancode_to_c(uint8_t sc);
 uint8_t kb_get_scancode();
 #endif
+unsigned char loop_until_keypress();

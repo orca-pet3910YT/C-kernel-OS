@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 #include <port.h>
 
@@ -14,6 +15,13 @@ void set_cursor_pos(int row, int col) {
 	outb(0x3D5, (unsigned char)((pos >> 8) & 0xFF));
 }
 
+void clear_screen() {
+        for (int i = 0; i < 2000; i++) {
+                buffer[i] = 0x0720;
+        }
+}
+
+
 void putc(char c) {
 	if (c == '\n') {
 		col = 0; row++;
@@ -23,6 +31,8 @@ void putc(char c) {
 			while (buffer[(row*80+col)-1] == 0x0720 && col != 0) {
 				col--;
 			}
+		} else if (col == 0 && row == 0) {
+			return;
 		} else {
 			col--; buffer[row*80+col] = (0x07 << 8) | ' ';
 		}
@@ -38,6 +48,7 @@ void putc(char c) {
 	}
 	if (row >= 25) {
 		row = 24; // TODO: scroll
+		clear_screen();
 	}
 	set_cursor_pos(row, col);
 }

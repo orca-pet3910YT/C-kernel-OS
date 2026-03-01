@@ -8,12 +8,9 @@ void kmain(void) {
 	//putc('h');
 	//putc('\n');
 	//putc('i');
-	puts("Hello,\nWorld!");
+	puts("Hello, World!");
 	//putc(scancode_to_c(kb_get_scancode()));
 	for (;;) {
-		char c = scancode_to_c(kb_get_scancode());
-		if (c) {
-			putc(c);
-		}
+		putc(loop_until_keypress());
 	}
 }
