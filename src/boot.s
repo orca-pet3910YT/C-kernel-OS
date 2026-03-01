@@ -20,3 +20,13 @@ _start:
 hang:
 	hlt
 	jmp hang
+
+.section .build_note, "a", @note
+.align 4
+.long 8
+.long 15
+.long 70
+.asciz "made by"
+.align 4
+.asciz "orca.pet3910YT"
+.align 4

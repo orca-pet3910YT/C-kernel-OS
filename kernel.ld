@@ -5,29 +5,22 @@ SECTIONS
 {
     . = 1M;
 
-    .multiboot :
-    {
-        *(.multiboot)
-    }
-
     .text :
     {
+	KEEP(*(.multiboot))
         *(.text*)
-    }
-
-    .rodata :
-    {
-        *(.rodata*)
-    }
-
-    .data :
-    {
-        *(.data*)
+	*(.rodata)
+	*(.data)
     }
 
     .bss :
     {
         *(.bss*)
         *(COMMON)
+    }
+
+    .build_note :
+    {
+        *(.build_note)
     }
 }

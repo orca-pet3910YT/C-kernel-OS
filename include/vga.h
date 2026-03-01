@@ -21,6 +21,7 @@ void clear_screen() {
         }
 }
 
+void scroll_once() {}
 
 void putc(char c) {
 	if (c == '\n') {
@@ -47,8 +48,9 @@ void putc(char c) {
 		col = 0; row++;
 	}
 	if (row >= 25) {
-		row = 24; // TODO: scroll
 		clear_screen();
+		row = 0; // 24
+		col = 0;
 	}
 	set_cursor_pos(row, col);
 }
