@@ -1,6 +1,7 @@
 #include <vga.h>
 
 void panic(const char *msg) {
+	__asm__ volatile ("cli");
 	puts("\nKERNEL PANIC: ");
 	puts(msg);
 	puts(" system halted!\n");
