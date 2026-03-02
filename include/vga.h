@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <globals.h>
+#include <serial.h>
 
 int row = 0;
 int col = 0;
@@ -44,15 +45,15 @@ void putc(char c) {
 		col = 0; row++;
 	} else if (c == '\b') {
 		if (col == 0 && row > 0) {
-			col = 79; row--;
+			/*col = 79; row--;
 			while (buffer[(row*80+col)-1] == 0x0720 && col != 0) {
 				col--;
-			}
+			}*/ // text editor style
 		} else if (col == 0 && row == 0) {
 			return;
-		} else {
+		} /*else {
 			col--; buffer[row*80+col] = (0x07 << 8) | ' ';
-		}
+		}*/
 	} else if (c == '\t') {
 		for (int i = 0; i < tab_indent; i++) {
 			putc(' ');
@@ -89,4 +90,5 @@ void printk(char* str) {
 	}
 	buf[i] = '\n';
 	puts(buf);
+	sputs(buf); // this relies on early serial logging. DO NOT USE printk BEFORE INITIALIZING SERIAL!
 }

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <panic.h>
 #include <stdlib.h>
+#include <serial.h>
 
 void kmain(void) {
 	//volatile char* video = (volatile char*)0xB8000;
@@ -14,6 +15,8 @@ void kmain(void) {
 	//char string_thing[12] = {0};
 	//ftoa(0.25, string_thing);
 	//puts(string_thing);
+	serial_init();
+	printk("Initialized serial at 0x3F8 (COM1)");
 	printk("Hello, World!");
 	printk("CkOS Version 0.01 for i386 (x86-32)");
 	//putc(scancode_to_c(kb_get_scancode()));
