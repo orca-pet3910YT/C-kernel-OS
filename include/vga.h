@@ -51,9 +51,9 @@ void putc(char c) {
 			}*/ // text editor style
 		} else if (col == 0 && row == 0) {
 			return;
-		} /*else {
+		} else {
 			col--; buffer[row*80+col] = (0x07 << 8) | ' ';
-		}*/
+		}
 	} else if (c == '\t') {
 		for (int i = 0; i < tab_indent; i++) {
 			putc(' ');

@@ -17,12 +17,22 @@ void kmain(void) {
 	//puts(string_thing);
 	serial_init();
 	printk("Initialized serial at 0x3F8 (COM1)");
+	//__asm__ volatile ("sti");
+	//printk("Interrupts set to on");
 	printk("Hello, World!");
 	printk("CkOS Version 0.01 for i386 (x86-32)");
+	const char* logo =
+" __   _  _\n"
+"/  |/| ||_`\n"
+"\\__|\\|_|._|\n"
+"\n\0";
+	puts(logo);
+	printk("Welcome to CkOS 0.01!");
 	//putc(scancode_to_c(kb_get_scancode()));
 	//panic("This PC is ass."); // compile with this uncommented to prank people :)
 	char command[256] = {0};
 	int index = 0;
+	puts("$ ");
 	for (;;) {
 		char c = loop_until_keypress();
 		putc(c);
@@ -37,6 +47,16 @@ void kmain(void) {
 				command[i] = 0;
 			}
 			index = 0;
+			puts("$ ");
+		} else if (command[index-1] == '\n') {
+			puts("Invalid command: ");
+			puts(command);
+			putc('\n');
+			index = 0;
+			for (unsigned int i = 0; i < 256; i++) {
+				command[i] = 0;
+			}
+			puts("$ ");
 		}
 	}
 }
