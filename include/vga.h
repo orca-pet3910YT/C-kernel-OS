@@ -79,7 +79,7 @@ void puts(const char *s) {
 }
 
 // no more than 1004 chars, thanks
-void printk(char* str) {
+void printk(const char* str) {
 	char buf[1024] = {0};
 	set_ftimestamp(uptime, buf);
 	int i = strlen(buf);
