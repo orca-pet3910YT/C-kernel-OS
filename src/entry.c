@@ -10,8 +10,10 @@ void kmain(void) {
 	//putc('h');
 	//putc('\n');
 	//putc('i');
-	puts("Hello, World!\n");
+	puts("[ 0.000000] Hello, World!\n");
+	puts("[ 0.000000] CkOS Version 0.01 for i386 (x86-32)\n");
 	//putc(scancode_to_c(kb_get_scancode()));
+	//panic("This PC is ass."); // compile with this uncommented to prank people :)
 	char command[256] = {0};
 	int index = 0;
 	for (;;) {
