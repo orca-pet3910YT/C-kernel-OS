@@ -1,6 +1,9 @@
 #pragma once
 #include <stdint.h>
 #include <port.h>
+#include <stdlib.h>
+#include <string.h>
+#include <globals.h>
 
 int row = 0;
 int col = 0;
@@ -19,6 +22,19 @@ void clear_screen() {
         for (int i = 0; i < 2000; i++) {
                 buffer[i] = 0x0720;
         }
+}
+
+void set_ftimestamp(double timestamp, char* buf) {
+	int i = 0;
+	buf[i++] = '[';
+	if (timestamp < 10.0) buf[i++] = ' '; // handle filling the square bracket thingy for our ADHD folks :P
+	char num[20] = {0};
+	ftoa(timestamp, num);
+	for (int j = 0; num[j] != '\0'; j++) {
+		buf[i++] = num[j];
+	}
+	buf[i++] = ']';
+	buf[i] = '\0';
 }
 
 void scroll_once() {}
@@ -59,4 +75,18 @@ void puts(const char *s) {
 	while (*s) {
 		putc(*s++);
 	}
+}
+
+// no more than 1004 chars, thanks
+void printk(char* str) {
+	char buf[1024] = {0};
+	set_ftimestamp(uptime, buf);
+	int i = strlen(buf);
+	int j = 0;
+	buf[i++] = ' ';
+	while (str[j] && i < 1022) {
+		buf[i++] = str[j++];
+	}
+	buf[i] = '\n';
+	puts(buf);
 }

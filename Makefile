@@ -1,5 +1,5 @@
 CCFLAGS = -ffreestanding -m32
-CCFLAGSC = -ffreestanding -m32 -fno-exceptions -fno-stack-protector -fno-pie -no-pie -fno-unwind-tables -fno-asynchronous-unwind-tables -I include -nostdlib
+CCFLAGSC = -ffreestanding -m32 -fno-exceptions -fno-stack-protector -fno-pie -no-pie -fno-unwind-tables -fno-asynchronous-unwind-tables -I include -nostdlib -Wall -Wextra
 all:
 	@echo " MKDIR  build"
 	@mkdir build -p
