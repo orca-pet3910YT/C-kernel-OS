@@ -5,6 +5,8 @@
 
 #include "port.h"
 #include "kb.h"
+#include <serial.h>
+#include <stddef.h>
 
 static uint8_t shift = 0;
 static uint8_t ctrl = 0;
@@ -102,6 +104,8 @@ uint8_t kb_get_scancode() {
 unsigned char loop_until_keypress() {
 	for (;;) {
 		char c = scancode_to_c(kb_get_scancode());
+		if (c) return c;
+		c = sgetc();
 		if (c) return c;
 	}
 }

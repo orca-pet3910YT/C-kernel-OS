@@ -43,16 +43,18 @@ void scroll_once() {}
 void putc(char c) {
 	if (c == '\n') {
 		col = 0; row++;
+		sputc(c);
 	} else if (c == '\b') {
-		if (col == 0 && row > 0) {
+		if (col == 0 && row == 0) {
 			/*col = 79; row--;
 			while (buffer[(row*80+col)-1] == 0x0720 && col != 0) {
 				col--;
 			}*/ // text editor style
 		} else if (col == 0 && row == 0) {
 			return;
-		} else {
+		} else if (col > 2) {
 			col--; buffer[row*80+col] = (0x07 << 8) | ' ';
+			sputc(c);
 		}
 	} else if (c == '\t') {
 		for (int i = 0; i < tab_indent; i++) {
@@ -60,6 +62,7 @@ void putc(char c) {
 		}
 	} else {
 		buffer[row*80+col] = (0x07 << 8) | c; col++;
+		sputc(c);
 	}
 	if (col >= 80) {
 		col = 0; row++;
@@ -90,5 +93,5 @@ void printk(const char* str) {
 	}
 	buf[i] = '\n';
 	puts(buf);
-	sputs(buf); // this relies on early serial logging. DO NOT USE printk BEFORE INITIALIZING SERIAL!
+	//sputs(buf); // this relies on early serial logging. DO NOT USE printk BEFORE INITIALIZING SERIAL!
 }

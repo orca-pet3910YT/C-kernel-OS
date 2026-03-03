@@ -18,3 +18,26 @@ size_t strlen(const char *a) {
 	while (a[bytes] != '\0' && bytes < 16777216/32) { bytes++; }
 	return bytes;
 }
+
+char *strcat(char *to, const char *from) {
+	if (!to || !from) return to;
+	char *d = to;
+	size_t i = 0;
+	while (*d != '\0' && i < 16777216/32) {
+		d++; i++;
+	}
+	if (i >= 16777216/32) return to;
+	i = 0;
+	while ((*d++ = *from++) != '\0' && i < 16777216/32) i++;
+	if (i >= 16777216/32) *(d-1) = '\0';
+	return to;
+}
+
+char *strcpy(char *to, const char *from) {
+	if (!to || !from) return to;
+	char *d = to;
+	size_t i = 0;
+	while ((*d++ = *from++) != '\0' && i < 16777216/32) i++;
+	if (i >= 16777216/32) *(d-1) = '\0';
+	return to;
+}
