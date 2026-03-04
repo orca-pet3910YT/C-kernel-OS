@@ -30,8 +30,12 @@ void sputs(const char *s) {
 }
 
 char sgetc_raw() {
-	if (inb(COM1+5) & 1) { return inb(COM1); }
-	return 0x00;
+	//if (inb(COM1+5) & 1) { return inb(COM1); }
+	char c = 0;
+	uint8_t state = inb(COM1+5);
+	if (state & 0x1E) return 0;
+	if (state & 1) c = inb(COM1);
+	return c;
 }
 
 char sgetc() {
