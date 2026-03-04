@@ -30,11 +30,11 @@ all:
 	@cp build/bootImage.elf iso
 	@echo "  GRUB  build/boot.iso"
 	@grub-mkrescue -d /usr/lib/grub/i386-pc -o build/boot.iso iso
-	@make qemu
+	@make qemu-g
 
 qemu-g:
 	@echo "  QEMU  build/boot.iso"
-	@qemu-system-i386 -cdrom build/boot.iso -serial stdio -boot order=dca -nic none
+	@qemu-system-i386 -cdrom build/boot.iso -serial stdio -boot order=dca -nic none -cpu max
 
 qemu:
 	@echo "  QEMU  build/boot.iso"

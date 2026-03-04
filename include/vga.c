@@ -21,9 +21,10 @@ void set_cursor_pos(int row, int col) {
 }
 
 void clear_screen() {
-        for (int i = 0; i < 2000; i++) {
-                buffer[i] = 0x0720;
-        }
+	for (int i = 0; i < 2000; i++) {
+		buffer[i] = 0x0720;
+	}
+	row = 0; col = 0;
 }
 
 void set_ftimestamp(double timestamp, char* buf) {
@@ -39,7 +40,19 @@ void set_ftimestamp(double timestamp, char* buf) {
 	buf[i] = '\0';
 }
 
-void scroll_once() {}
+void scroll_once() {
+	//int index = 0;
+	for (int i = 0; i < 24; i++) {
+		for (int j = 0; j < 80; j++) {
+			buffer[i*80+j] = buffer[(i+1)*80+j];
+		}
+	}
+	for (int i = 0; i < 80; i++) {
+		buffer[24*80+i] = 0x0720;
+	}
+
+	return;
+}
 
 void putc(char c) {
 	if (c == '\n') {
@@ -69,9 +82,9 @@ void putc(char c) {
 		col = 0; row++;
 	}
 	if (row >= 25) {
-		clear_screen();
-		row = 0; // 24
-		col = 0;
+		scroll_once(); //clear_screen();
+		row = 24; // 0 // 24
+		//col = 0;
 	}
 	set_cursor_pos(row, col);
 }

@@ -73,7 +73,9 @@ void kmain(void) {
 				"halt: halt the CPU putting the entire system to a freeze\n"
 				"help: display this message\n"
 				"logo: display the logo\n"
-				"ver: display the version\n");
+				"ver: display the version\n"
+				"clear: clear the screen\n"
+				"panictest: test the panic functionality\n");
 			} else if (strcmp(command, "hello") == 0) {
 				puts("Hello, World!\n");
 			} else if (strcmp(command, "poweroff") == 0) {
@@ -88,6 +90,10 @@ void kmain(void) {
 				puts(logo);
 			} else if (strcmp(command, "ver") == 0) {
 				printk(ver);
+			} else if (strcmp(command, "panictest") == 0) {
+				panic("User-triggered panic");
+			} else if (strcmp(command, "clear") == 0) {
+				clear_screen();
 			} else if (index > 0) {
 				puts("Invalid command: ");
 				puts(command);
