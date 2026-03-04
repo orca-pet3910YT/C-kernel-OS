@@ -5,14 +5,22 @@ all:
 	@mkdir build -p
 	@echo "    AS  src/boot.s"
 	@gcc -c src/boot.s -o build/boot.o $(CCFLAGS)
+	@echo "    CC  include/vga.c"
+	@gcc -c include/vga.c -o build/vga.o $(CCFLAGSC)
 	@echo "    CC  src/entry.c"
 	@gcc -c src/entry.c -o build/entry.o $(CCFLAGSC)
+	@echo "    CC  include/stdlib.c"
+	@gcc -c include/stdlib.c -o build/stdlib.o $(CCFLAGSC)
 	@echo "    CC  include/serial.c"
 	@gcc -c include/serial.c -o build/serial.o $(CCFLAGSC)
 	@echo "    CC  include/port.c"
 	@gcc -c include/port.c -o build/port.o $(CCFLAGSC)
 	@echo "    CC  include/kb.c"
 	@gcc -c include/kb.c -o build/kb.o $(CCFLAGSC)
+	@echo "    CC  include/string.c"
+	@gcc -c include/string.c -o build/string.o $(CCFLAGSC)
+	@echo "    CC  include/globals.c"
+	@gcc -c include/globals.c -o build/globals.o $(CCFLAGSC)
 	@echo "    RM  build/bootImage.elf"
 	@rm -f build/bootImage.elf
 	@echo "    LD  build/bootImage.elf"
@@ -26,11 +34,11 @@ all:
 
 qemu-g:
 	@echo "  QEMU  build/boot.iso"
-	@qemu-system-i386 -cdrom build/boot.iso -serial stdio
+	@qemu-system-i386 -cdrom build/boot.iso -serial stdio -boot order=dca -nic none
 
 qemu:
 	@echo "  QEMU  build/boot.iso"
-	@qemu-system-i386 -cdrom build/boot.iso -nographic
+	@qemu-system-i386 -cdrom build/boot.iso -nographic -boot order=dca -nic none
 
 clean:
 	@echo " CLEAN  build"

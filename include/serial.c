@@ -38,6 +38,10 @@ char sgetc() {
 	char c = sgetc_raw();
 	if (c == '\r') {
 		return '\n';
+	} else if (c == 0x7F) {
+		sputc('\b');
+		sputc(' ');
+		return '\b';
 	}
 	return c;
 }
