@@ -101,11 +101,18 @@ uint8_t kb_get_scancode() {
 	return 0; // no data
 }
 
-unsigned char loop_until_keypress() {
+unsigned char loop_until_keypress_e() {
 	for (;;) {
 		char c = scancode_to_c(kb_get_scancode());
 		if (c) return c;
 		c = sgetc();
+		if (c) return c;
+	}
+}
+
+unsigned char loop_until_keypress() {
+	for (;;) {
+		char c = scancode_to_c(kb_get_scancode());
 		if (c) return c;
 	}
 }

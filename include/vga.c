@@ -57,6 +57,40 @@ void scroll_once() {
 void putc(char c) {
 	if (c == '\n') {
 		col = 0; row++;
+	} else if (c == '\b') {
+		if (col == 0 && row == 0) {
+			/*col = 79; row--;
+			while (buffer[(row*80+col)-1] == 0x0720 && col != 0) {
+				col--;
+			}*/ // text editor style
+		} else if (col == 0 && row == 0) {
+			return;
+		} else if (col > 2) {
+			col--; buffer[row*80+col] = (0x07 << 8) | ' ';
+		}
+	} else if (c == '\t') {
+		for (int i = 0; i < tab_indent; i++) {
+			putc(' ');
+		}
+	} else {
+		buffer[row*80+col] = (0x07 << 8) | c; col++;
+	}
+	if (col >= 80) {
+		col = 0; row++;
+	}
+	if (row >= 25) {
+		scroll_once(); //clear_screen();
+		row = 24; // 0 // 24
+		//col = 0;
+	}
+	set_cursor_pos(row, col);
+}
+
+// put character extended
+
+void putce(char c) {
+	if (c == '\n') {
+		col = 0; row++;
 		sputc(c);
 	} else if (c == '\b') {
 		if (col == 0 && row == 0) {
