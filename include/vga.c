@@ -6,6 +6,26 @@
 #include <serial.h>
 #include <vga.h>
 
+/* VGA table of colors
+0 - black
+1 - blue
+2 - green
+3 - bright blue
+4 - red
+5 - pink
+6 - shit
+7 - gray
+8 - dark gray
+9 - light blue
+A - light green
+B - brighter blue
+C - light red
+D - light pink
+E - yellow
+F - white
+*/
+
+unsigned char color = 0x07;
 int row = 0;
 int col = 0;
 static uint16_t* buffer = (uint16_t*)0xB8000;
@@ -19,9 +39,13 @@ void set_cursor_pos(int row, int col) {
 	outb(0x3D5, (unsigned char)((pos >> 8) & 0xFF));
 }
 
+void set_color(unsigned char vga_color) {
+	color = vga_color;
+}
+
 void clear_screen() {
 	for (int i = 0; i < 2000; i++) {
-		buffer[i] = 0x0720;
+		buffer[i] = (color << 8) + 0x20;
 	}
 	row = 0; col = 0;
 }
@@ -47,7 +71,7 @@ void scroll_once() {
 		}
 	}
 	for (int i = 0; i < 80; i++) {
-		buffer[24*80+i] = 0x0720;
+		buffer[24*80+i] = (color << 8) + 0x20;
 	}
 
 	return;
@@ -65,14 +89,14 @@ void putc(char c) {
 		} else if (col == 0 && row == 0) {
 			return;
 		} else if (col > 2) {
-			col--; buffer[row*80+col] = (0x07 << 8) | ' ';
+			col--; buffer[row*80+col] = (color << 8) | ' ';
 		}
 	} else if (c == '\t') {
 		for (int i = 0; i < tab_indent; i++) {
 			putc(' ');
 		}
 	} else {
-		buffer[row*80+col] = (0x07 << 8) | c; col++;
+		buffer[row*80+col] = (color << 8) | c; col++;
 	}
 	if (col >= 80) {
 		col = 0; row++;

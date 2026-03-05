@@ -31,8 +31,10 @@ void kmain(void) {
 	//char string_thing[12] = {0};
 	//ftoa(0.25, string_thing);
 	//puts(string_thing);
-	serial_init();
+	clear_screen();
 	printk(ver);
+	printk("Refreshed VGA");
+	serial_init();
 	printk("Initialized serial at 0x3F8 (COM1)");
 	__asm__ volatile ("cli");
 	printk("Clear interrupts");
@@ -43,7 +45,9 @@ void kmain(void) {
 	//__asm__ volatile ("sti");
 	//printk("Interrupts set to on");
 	printk("Hello, World!");
+	set_color(0x0F);
 	puts(logo); // globals.h:4
+	set_color(0x07);
 	printk("Welcome to CkOS!");
 	//putc(scancode_to_c(kb_get_scancode()));
 	//panic("This PC is ass."); // compile with this uncommented to prank people :)
@@ -87,13 +91,17 @@ void kmain(void) {
 			} else if (strcmp(command, "halt") == 0) {
 				while (1) halt();
 			} else if (strcmp(command, "logo") == 0) {
+				set_color(0x0F);
 				puts(logo);
+				set_color(0x07);
 			} else if (strcmp(command, "ver") == 0) {
 				printk(ver);
 			} else if (strcmp(command, "panictest") == 0) {
 				panic("User-triggered panic");
 			} else if (strcmp(command, "clear") == 0) {
 				clear_screen();
+			} else if (strcmp(command, "exit") == 0) {
+				return;
 			} else if (index > 0) {
 				puts("Invalid command: ");
 				puts(command);

@@ -13,13 +13,22 @@ stack_top:
 .section .text
 .global _start
 .type _start, @function
+.extern kmain
+.extern panic
 _start:
 	mov $stack_top, %esp
 	cli
+	cld
 	call kmain
+	push $stat_kmain_return
+	call panic
 hang:
 	hlt
 	jmp hang
+
+.section .rodata
+stat_kmain_return:
+.asciz "BAD C: `kmain` returned"
 
 .section .build_note, "a", @note
 .align 4
