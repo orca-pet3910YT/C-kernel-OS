@@ -1,4 +1,3 @@
-#pragma once
 #include <stdint.h>
 
 // simple integer to string (why `a` though, i'm not sure) - returning int in case an error happens

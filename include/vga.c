@@ -1,4 +1,3 @@
-#pragma once
 #include <stdint.h>
 #include <port.h>
 #include <stdlib.h>
