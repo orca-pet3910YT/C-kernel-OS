@@ -5,6 +5,8 @@
 #include <globals.h>
 #include <serial.h>
 #include <vga.h>
+#include <stdarg.h>
+#include <limits.h>
 
 /* VGA table of colors
 0 - black
@@ -77,7 +79,8 @@ void scroll_once() {
 	return;
 }
 
-void putc(char c) {
+int putc(int c) {
+	if (c == -1) return -1;
 	if (c == '\n') {
 		col = 0; row++;
 	} else if (c == '\b') {
@@ -87,7 +90,7 @@ void putc(char c) {
 				col--;
 			}*/ // text editor style
 		} else if (col == 0 && row == 0) {
-			return;
+			return 0;
 		} else if (col > 2) {
 			col--; buffer[row*80+col] = (color << 8) | ' ';
 		}
@@ -107,6 +110,7 @@ void putc(char c) {
 		//col = 0;
 	}
 	set_cursor_pos(row, col);
+	return c;
 }
 
 // put character extended
@@ -146,23 +150,81 @@ void putce(char c) {
 	set_cursor_pos(row, col);
 }
 
-void puts(const char *s) {
+int puts(const char *s) {
 	while (*s) {
-		putc(*s++);
+		if (putc(*s++) == -1) return 0;
 	}
+	return 1;
+}
+
+int print(const char *s, int length) {
+	for (int i = 0; i < length; i++) {
+		if (putc(s[i]) == -1) return 0;
+	}
+	return 1;
+}
+
+int cprintf(const char *restrict format, va_list parameters) {
+	int written = 0;
+	while (*format != '\0') {
+		size_t maxrem = INT_MAX - written;
+		if (format[0] != '%' || format[1] == '%') {
+			if (format[0] == '%') format++;
+			size_t amount = 1;
+			while (format[amount] && format[amount] != '%') amount++;
+			if (maxrem < amount) return -1;
+			if (!print(format, amount)) return -1;
+			format += amount; written += amount;
+			continue;
+		}
+		const char *format_begun_at = format++;
+		if (*format == 'c') {
+			format++;
+			char c = (char)va_arg(parameters, int);
+			if (!maxrem) return -1;
+			if (!print(&c, sizeof(c))) return -1;
+			written++;
+		} else if (*format == 's') {
+			format++; const char *str = va_arg(parameters, const char*);
+			if (!str) str = "(Null)";
+			size_t len = strlen(str);
+			if (maxrem < len) return -1;
+			if (!print(str, len)) return -1;
+			written += len;
+		} else {
+			format = format_begun_at;
+			size_t len = strlen(format);
+			if (maxrem < len) return -1;
+			if (!print(format, len)) return -1;
+			written += len; format += len;
+		}
+	}
+	return written;
+}
+
+int printf(const char *restrict format, ...) {
+	va_list parameters;
+	va_start(parameters, format);
+	int result = cprintf(format, parameters);
+	va_end(parameters);
+	return result;
 }
 
 // no more than 1004 chars, thanks
-void printk(const char* str) {
-	char buf[1024] = {0};
-	set_ftimestamp(uptime, buf);
-	int i = strlen(buf);
-	int j = 0;
-	buf[i++] = ' ';
-	while (str[j] && i < 1022) {
-		buf[i++] = str[j++];
-	}
-	buf[i] = '\n';
-	puts(buf);
-	//sputs(buf); // this relies on early serial logging. DO NOT USE printk BEFORE INITIALIZING SERIAL!
+int printk(const char* str, ...) {
+	va_list params;
+	va_start(params, str);
+        char buf[1024] = {0};
+        set_ftimestamp(uptime, buf);
+        int i = strlen(buf);
+        int j = 0;
+        buf[i++] = ' ';
+        while (str[j] && i < 1022) {
+                buf[i++] = str[j++];
+        }
+        buf[i] = '\n';
+	int r = cprintf(buf, params);
+	va_end(params);
+        return r;
+        //sputs(buf); // this relies on early serial logging. DO NOT USE printk BEFORE INITIALIZING SERIAL!
 }

@@ -47,3 +47,31 @@ void *memset(void *to, int what, unsigned int count) {
 	while (count--) *p++ = (unsigned char)what;
 	return to;
 }
+
+void *memmove(void *to, const void *from, size_t size) {
+	unsigned char *dest = (unsigned char*)to;
+	const unsigned char *src = (const unsigned char *)from;
+	if (dest < src) {
+		for (size_t i = 0; i < size; i++) dest[i] = src[i];
+	} else {
+		for (size_t i = size; i; i--) dest[i-1] = src[i-1];
+	}
+	return to;
+}
+
+void *memcpy(void *restrict to, const void *restrict from, size_t size) {
+	unsigned char *dest = (unsigned char*)to;
+	const unsigned char *src = (const unsigned char*)from;
+	for (size_t i = 0; i < size; i++) dest[i] = src[i];
+	return to;
+}
+
+int memcmp(const void *a, const void *b, size_t size) {
+	const unsigned char *a_ = (const unsigned char*) a;
+	const unsigned char *b_ = (const unsigned char*) b;
+	for (size_t i = 0; i < size; i++) {
+		if (a_[i] < b_[i]) return -1;
+		if (b_[i] < a_[i]) return 1;
+	}
+	return 0;
+}

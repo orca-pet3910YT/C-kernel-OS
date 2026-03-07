@@ -46,14 +46,14 @@ void kmain(void) {
 	//printk("Interrupts set to on");
 	printk("Hello, World!");
 	set_color(0x0F);
-	puts(logo); // globals.h:4
+	printf("%s\n", logo); // globals.h:4
 	set_color(0x07);
 	printk("Welcome to CkOS!");
 	//putc(scancode_to_c(kb_get_scancode()));
 	//panic("This PC is ass."); // compile with this uncommented to prank people :)
 	char command[256] = {0};
 	int index = 0;
-	puts("$ ");
+	printf("$ ");
 	for (;;) {
 		char c = loop_until_keypress();
 		putc(c);
@@ -70,7 +70,7 @@ void kmain(void) {
 		}
 		if (c == '\n') {
 			if (strcmp(command, "help") == 0) {
-				puts("The commands are:\n"
+				printf("The commands are:\n"
 				"hello: say hello to the world\n"
 				"poweroff: turn the system off (QEMU only)\n"
 				"reboot: restart the system\n"
@@ -81,7 +81,7 @@ void kmain(void) {
 				"clear: clear the screen\n"
 				"panictest: test the panic functionality\n");
 			} else if (strcmp(command, "hello") == 0) {
-				puts("Hello, World!\n");
+				printf("Hello, World!\n");
 			} else if (strcmp(command, "poweroff") == 0) {
 				poweroff();
 				panic("Failed to power off; likely not a QEMU machine");
@@ -89,27 +89,28 @@ void kmain(void) {
 				reboot();
 				panic("Failed to reboot; unknown error");
 			} else if (strcmp(command, "halt") == 0) {
+				printf("System halted. It is now safe to power off.\n");
 				while (1) halt();
 			} else if (strcmp(command, "logo") == 0) {
 				set_color(0x0F);
-				puts(logo);
+				printf("%s\n", logo);
 				set_color(0x07);
 			} else if (strcmp(command, "ver") == 0) {
-				printk(ver);
+				printf("%s\n", ver);
 			} else if (strcmp(command, "panictest") == 0) {
 				panic("User-triggered panic");
 			} else if (strcmp(command, "clear") == 0) {
 				clear_screen();
 			} else if (strcmp(command, "exit") == 0) {
 				return;
+			} else if (strcmp(command, "credits") == 0) {
+				printf(credits);
 			} else if (index > 0) {
-				puts("Invalid command: ");
-				puts(command);
-				putc('\n');
+				printf("Invalid command: %s\n", command);
 			}
 			index = 0;
 			command[0] = '\0';
-			puts("$ ");
+			printf("$ ");
 			continue;
 		}
 	}

@@ -3,4 +3,5 @@
 extern double uptime;
 extern const char *ver;
 extern const char *logo;
+extern const char *credits;
 #endif
