@@ -191,6 +191,13 @@ int cprintf(const char *restrict format, va_list parameters) {
 			if (maxrem < len) return -1;
 			if (!print(str, len)) return -1;
 			written += len;
+		} else if (*format == 'x') {
+			format++; unsigned int value = va_arg(parameters, unsigned int);
+			char buf[8]; htoa(value, buf);
+			if (maxrem < 8) return -1;
+			if (!print(buf, 8)) return -1;
+			written += 8;
+			// TODO: finish
 		} else {
 			format = format_begun_at;
 			size_t len = strlen(format);

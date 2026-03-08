@@ -7,3 +7,5 @@ void *memset(void *to, int what, unsigned int count);
 void *memmove(void *to, const void *from, size_t size);
 void *memcpy(void *restrict to, const void *restrict from, size_t size);
 int memcmp(const void *a, const void *b, size_t size);
+int split(char *str, char sep, char *strings[], int stop);
+int strchr(char *str, char c);

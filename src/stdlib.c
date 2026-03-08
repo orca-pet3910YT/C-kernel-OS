@@ -48,3 +48,13 @@ int ftoa(double n, char *str) {
 	}
 	str[i] = '\0'; return 0;
 }
+
+char *htoa(uint32_t n, char *str) {
+	char digits[] = "0123456789ABCDEF";
+	for (int i = 0; i < 8; i++) {
+		int shift = (7-i)*4;
+		str[i] = digits[(n >> shift) & 0xF];
+	}
+	str[8] = '\0';
+	return str;
+}

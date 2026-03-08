@@ -7,6 +7,7 @@
 #include <serial.h>
 #include <power.h>
 #include <port.h>
+#include <multiboot.h>
 
 void pic_remap() {
 	outb(0x20, 0x11);
@@ -21,7 +22,29 @@ void pic_remap() {
 	outb(0xA1, 0x00);
 }
 
-void kmain(void) {
+char *__split_cmdline(char **buffer) {
+	char *a, *b;
+	a = *buffer;
+	if (!a) return NULL;
+	for (b = a; *b && strchr(b, ' '); b++);
+	if (*b) {
+		*b++ = '\0';
+		*buffer = b;
+	} else {
+		*buffer = NULL;
+	}
+	return a;
+}
+
+void parse_cmdline(char *input) {
+	char *a; char *b = input;
+	while ((a = __split_cmdline(&b))) {
+		if (*a == '\0') continue;
+		printk("Received command line argument: %s", a);
+	}
+}
+
+void kmain(int magic, mbinfo_t *mbi) {
 	//volatile char* video = (volatile char*)0xB8000;
 	//video[0] = 'E';
 	//video[1] = 0x07;
@@ -42,6 +65,19 @@ void kmain(void) {
 	printk("Initialized PS/2 BIOS keyboard");
 	pic_remap();
 	printk("Remapped the PIC");
+	// start multiboot logic here
+	printk("Multiboot flags: %x", mbi->flags);
+	char *cmdline = NULL;
+	char *strings[16];
+	if (mbi->flags & (1 << 2)) {
+		cmdline = (char*)mbi -> cmdline;
+		printk("Command line: %s", cmdline);
+	}
+	//unsigned int strn = (unsigned int)split(cmdline, ' ', strings, 15);
+	//for (unsigned int i = 0; /*i < (sizeof(strings)/sizeof(strings[0]))*/ i < strn; i++) {
+	//	printk("cmdline of %x: %s", i, strings[i]);
+	//}
+	parse_cmdline(cmdline);
 	//__asm__ volatile ("sti");
 	//printk("Interrupts set to on");
 	printk("Hello, World!");

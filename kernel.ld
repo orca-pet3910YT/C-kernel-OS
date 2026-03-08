@@ -5,7 +5,7 @@ SECTIONS
 {
     . = 1M;
 
-    .text :
+    .text ALIGN(4K):
     {
 	KEEP(*(.multiboot))
         *(.text*)
@@ -13,13 +13,23 @@ SECTIONS
 	*(.data)
     }
 
-    .bss :
+    .rodata ALIGN(4K) :
+    {
+        *(.rodata*)
+    }
+
+    .data ALIGN(4K) :
+    {
+        *(.data*)
+    }
+
+    .bss ALIGN(4K) :
     {
         *(.bss*)
         *(COMMON)
     }
 
-    .build_note :
+    .build_note ALIGN(4) :
     {
         *(.build_note)
     }

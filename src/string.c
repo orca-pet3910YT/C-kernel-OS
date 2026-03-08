@@ -1,8 +1,6 @@
 #include <stddef.h>
 #include <string.h>
 
-// TODO: finish
-
 int strcmp(const char *a, const char *b) {
 	if (!a || !b) {
 		if (a == b) return 0;
@@ -74,4 +72,24 @@ int memcmp(const void *a, const void *b, size_t size) {
 		if (b_[i] < a_[i]) return 1;
 	}
 	return 0;
+}
+
+int split(char *str, char sep, char *strings[], int stop) {
+	if (!sep) sep = ' '; // prevent separating by nothing
+	int i = 0;
+	strings[i++] = str;
+	while (*str && i < stop) {
+		if (*str == sep) {
+			*str = '\0';
+			strings[i++] = str+1;
+		}
+		i++;
+	}
+	return i;
+}
+
+int strchr(char *str, char c) {
+	int i = 0;
+	for (i = 0; str[i] && str[i] != c; i++);
+	return i;
 }

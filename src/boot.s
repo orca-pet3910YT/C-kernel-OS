@@ -19,6 +19,8 @@ _start:
 	mov $stack_top, %esp
 	cli
 	cld
+	push %ebx
+	push %eax
 	call kmain
 	push $stat_kmain_return
 	call panic
