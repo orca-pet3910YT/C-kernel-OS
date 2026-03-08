@@ -40,6 +40,10 @@ qemu:
 	@echo "  QEMU  build/boot.iso"
 	@qemu-system-i386 -cdrom build/boot.iso -nographic -boot order=dca -nic none
 
+cl:
+	@echo -n "lines of code in total: "
+	@grep -R "" src/*.* include/*.* Makefile kernel.ld iso/boot/grub/grub.cfg | wc -l
+
 clean:
 	@echo " CLEAN  build"
 	@rm -rf build
