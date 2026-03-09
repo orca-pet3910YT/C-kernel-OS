@@ -7,5 +7,5 @@ extern const char *logo;
 extern const char *credits;
 extern bool serial_in;
 extern bool serial_out;
-extern char kbc;
+extern volatile char kbc;
 #endif
