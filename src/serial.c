@@ -50,7 +50,6 @@ int sgetc_raw() {
 }
 
 char sgetc() {
-
 	char c = sgetc_raw();
 	if (c < 0) return 0;
 	if (c == '\r') {

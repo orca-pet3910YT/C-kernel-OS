@@ -106,7 +106,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 	printf("$ ");
 	for (;;) {
 		char c = loop_until_keypress();
-		putc(c);
+		if (c) { putc(c); } else { continue; }
 		if (c == '\b') {
 			if (index > 0) {
 				index--;
