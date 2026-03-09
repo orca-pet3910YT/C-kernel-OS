@@ -3,10 +3,11 @@
  * thanks a lot for the inspiration to make a kernel!
  */
 
-#include "port.h"
-#include "kb.h"
+#include <port.h>
+#include <kb.h>
 #include <serial.h>
 #include <stddef.h>
+#include <globals.h>
 
 static uint8_t shift = 0;
 static uint8_t ctrl = 0;
@@ -113,6 +114,9 @@ unsigned char loop_until_keypress_e() {
 unsigned char loop_until_keypress() {
 	for (;;) {
 		char c = scancode_to_c(kb_get_scancode());
+		if (c) return c;
+		if (!serial_in) return 0;
+		c = sgetc();
 		if (c) return c;
 	}
 }

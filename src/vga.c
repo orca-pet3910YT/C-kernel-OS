@@ -83,6 +83,7 @@ int putc(int c) {
 	if (c == -1) return -1;
 	if (c == '\n') {
 		col = 0; row++;
+		if (serial_out) sputc('\n');
 	} else if (c == '\b') {
 		if (col == 0 && row == 0) {
 			/*col = 79; row--;
@@ -93,13 +94,15 @@ int putc(int c) {
 			return 0;
 		} else if (col > 2) {
 			col--; buffer[row*80+col] = (color << 8) | ' ';
+			if (serial_out) sputc(c);
 		}
 	} else if (c == '\t') {
 		for (int i = 0; i < tab_indent; i++) {
-			putc(' ');
+			putc(' '); if (serial_out) sputc(' ');
 		}
 	} else {
 		buffer[row*80+col] = (color << 8) | c; col++;
+		if (serial_out) sputc(c);
 	}
 	if (col >= 80) {
 		col = 0; row++;
@@ -110,6 +113,7 @@ int putc(int c) {
 		//col = 0;
 	}
 	set_cursor_pos(row, col);
+	//if (serial_out) sputc(c);
 	return c;
 }
 

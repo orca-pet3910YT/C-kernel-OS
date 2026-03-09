@@ -41,6 +41,15 @@ void parse_cmdline(char *input) {
 	while ((a = __split_cmdline(&b))) {
 		if (*a == '\0') continue;
 		printk("Received command line argument: %s", a);
+		if (strcmp(a, "s_in") == 0) {
+			serial_in = true;
+			printk("Serial input enabled");
+		} else if (strcmp(a, "s_out") == 0) {
+			serial_out = true;
+			printk("Serial output enabled");
+		} else {
+			printk("Invalid command line argument %s, ignoring", a);
+		}
 	}
 }
 
@@ -59,20 +68,25 @@ void kmain(int magic, mbinfo_t *mbi) {
 	printk("Refreshed VGA");
 	serial_init();
 	printk("Initialized serial at 0x3F8 (COM1)");
+        printk("Multiboot flags: %x", mbi->flags);
+	char *cmdline = NULL;
+	//char *strings[16];
+	printk("---BEGIN Command line info---");
+	if (mbi->flags & (1 << 2)) {
+		cmdline = (char*)mbi -> cmdline;
+		printk("Command line: %s", cmdline);
+	}
+	parse_cmdline(cmdline);
+	printk("Parsed command line provided by bootloader");
+	printk("--- END Command line info ---");
+	// FIXME: magic is 0
+	//if (magic != 0x1BADB002) panic("Incorrect Multiboot 1 magic number! Got 0x%x, should be 0x1BADB002");
 	__asm__ volatile ("cli");
 	printk("Clear interrupts");
 	kb_init();
 	printk("Initialized PS/2 BIOS keyboard");
 	pic_remap();
 	printk("Remapped the PIC");
-	// start multiboot logic here
-	printk("Multiboot flags: %x", mbi->flags);
-	char *cmdline = NULL;
-	char *strings[16];
-	if (mbi->flags & (1 << 2)) {
-		cmdline = (char*)mbi -> cmdline;
-		printk("Command line: %s", cmdline);
-	}
 	//unsigned int strn = (unsigned int)split(cmdline, ' ', strings, 15);
 	//for (unsigned int i = 0; /*i < (sizeof(strings)/sizeof(strings[0]))*/ i < strn; i++) {
 	//	printk("cmdline of %x: %s", i, strings[i]);

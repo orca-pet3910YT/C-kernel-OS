@@ -34,7 +34,7 @@ all:
 
 qemu-g:
 	@echo "  QEMU  build/boot.iso"
-	@qemu-system-i386 -cdrom build/boot.iso -serial stdio -boot order=dca -nic none -cpu max
+	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial stdio
 
 qemu:
 	@echo "  QEMU  build/boot.iso"
