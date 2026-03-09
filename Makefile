@@ -5,6 +5,10 @@ all:
 	@mkdir build -p
 	@echo "    AS  src/boot.s"
 	@gcc -c src/boot.s -o build/boot.o $(CCFLAGS)
+	@echo "  NASM  src/idtld.s"
+	@nasm -f elf32 src/idtld.s -o build/idtld.o
+	@echo "    CC  src/idt.c"
+	@gcc -c src/idt.c -o build/idt.o $(CCFLAGSC)
 	@echo "    CC  src/vga.c"
 	@gcc -c src/vga.c -o build/vga.o $(CCFLAGSC)
 	@echo "    CC  src/entry.c"
@@ -21,6 +25,12 @@ all:
 	@gcc -c src/string.c -o build/string.o $(CCFLAGSC)
 	@echo "    CC  src/globals.c"
 	@gcc -c src/globals.c -o build/globals.o $(CCFLAGSC)
+	@echo "    CC  src/panic.c"
+	@gcc -c src/panic.c -o build/panic.o $(CCFLAGSC)
+	@echo "  NASM  src/gdtf.s"
+	@nasm -f elf32 src/gdtf.s -o build/gdtf.o
+	@echo "    CC  src/gdt.c"
+	@gcc -c src/gdt.c -o build/gdt.o $(CCFLAGSC)
 	@echo "    RM  build/bootImage.elf"
 	@rm -f build/bootImage.elf
 	@echo "    LD  build/bootImage.elf"

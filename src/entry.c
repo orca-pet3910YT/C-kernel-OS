@@ -8,6 +8,8 @@
 #include <power.h>
 #include <port.h>
 #include <multiboot.h>
+#include <idt.h>
+#include <gdt.h>
 
 void pic_remap() {
 	outb(0x20, 0x11);
@@ -47,6 +49,9 @@ void parse_cmdline(char *input) {
 		} else if (strcmp(a, "s_out") == 0) {
 			serial_out = true;
 			printk("Serial output enabled");
+		} else if (strcmp(a, "inton") == 0) {
+			__asm__ volatile ("sti");
+			printk("Interrupts enabled");
 		} else {
 			printk("Invalid command line argument %s, ignoring", a);
 		}
@@ -71,6 +76,19 @@ void kmain(int magic, mbinfo_t *mbi) {
         printk("Multiboot flags: %x", mbi->flags);
 	char *cmdline = NULL;
 	//char *strings[16];
+	// FIXME: magic is 0
+	//if (magic != 0x1BADB002) panic("Incorrect Multiboot 1 magic number! Got 0x%x, should be 0x1BADB002");
+	__asm__ volatile ("cli");
+	printk("Clear interrupts");
+	kb_init();
+	printk("Initialized PS/2 BIOS keyboard");
+	gdt_init();
+	printk("GDT initialized, have fun suffering, dev of this cursed code");
+	pic_remap();
+	printk("Remapped the PIC");
+	init_idt();
+	printk("IDT initialized");
+	printk("Be careful what kind of shit can happen now!");
 	printk("---BEGIN Command line info---");
 	if (mbi->flags & (1 << 2)) {
 		cmdline = (char*)mbi -> cmdline;
@@ -79,14 +97,6 @@ void kmain(int magic, mbinfo_t *mbi) {
 	parse_cmdline(cmdline);
 	printk("Parsed command line provided by bootloader");
 	printk("--- END Command line info ---");
-	// FIXME: magic is 0
-	//if (magic != 0x1BADB002) panic("Incorrect Multiboot 1 magic number! Got 0x%x, should be 0x1BADB002");
-	__asm__ volatile ("cli");
-	printk("Clear interrupts");
-	kb_init();
-	printk("Initialized PS/2 BIOS keyboard");
-	pic_remap();
-	printk("Remapped the PIC");
 	//unsigned int strn = (unsigned int)split(cmdline, ' ', strings, 15);
 	//for (unsigned int i = 0; /*i < (sizeof(strings)/sizeof(strings[0]))*/ i < strn; i++) {
 	//	printk("cmdline of %x: %s", i, strings[i]);
@@ -105,7 +115,8 @@ void kmain(int magic, mbinfo_t *mbi) {
 	int index = 0;
 	printf("$ ");
 	for (;;) {
-		char c = loop_until_keypress();
+		//char c = loop_until_keypress();
+		char c = kbc; // from globals
 		if (c) { putc(c); } else { continue; }
 		if (c == '\b') {
 			if (index > 0) {

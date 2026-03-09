@@ -13,3 +13,4 @@ const char *credits =
 "           you: for usage of this experimental OS";
 bool serial_in = false; // true and false is defined in stdlib.h. while this is not the C standard, it makes you have to import less headers.
 bool serial_out = false;
+char kbc = 0;
