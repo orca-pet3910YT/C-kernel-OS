@@ -117,7 +117,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 	for (;;) {
 		//char c = loop_until_keypress();
 		char c = kbc; // from globals
-		if (c) { putc(c); } else { continue; }
+		if (c) { putc(c); kbc = 0; } else { continue; }
 		if (c == '\b') {
 			if (index > 0) {
 				index--;
