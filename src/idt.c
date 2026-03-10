@@ -5,7 +5,6 @@
 #include <port.h>
 #include <globals.h>
 
-#define K_CS 0x08
 idt_entry_t idt_ents[256];
 idtp_t idt_ptr;
 
