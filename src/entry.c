@@ -10,6 +10,7 @@
 #include <multiboot.h>
 #include <idt.h>
 #include <gdt.h>
+#include <pit.h>
 
 void pic_remap() {
 	outb(0x20, 0x11);
@@ -101,6 +102,8 @@ void kmain(int magic, mbinfo_t *mbi) {
 	parse_cmdline(cmdline);
 	__asm__ volatile ("sti");
 	printk("Set interrupts");
+	init_pit();
+	printk("Initialized PIT at 10 KHz");
 	printk("Hello, World!");
 	set_color(0x0F);
 	printf("%s\n", logo); // globals.h:4
@@ -163,6 +166,9 @@ void kmain(int magic, mbinfo_t *mbi) {
 				return;
 			} else if (strcmp(command, "credits") == 0) {
 				printf(credits);
+			} else if (strcmp(command, "crash") == 0) {
+				//__asm__ volatile ("int $0");
+				__asm__ volatile ("ud2");
 			} else if (index > 0) {
 				printf("Invalid command: %s\n", command);
 			}

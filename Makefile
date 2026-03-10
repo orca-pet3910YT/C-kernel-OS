@@ -31,6 +31,8 @@ all:
 	@nasm -f elf32 src/gdtf.s -o build/gdtf.o
 	@echo "    CC  src/gdt.c"
 	@gcc -c src/gdt.c -o build/gdt.o $(CCFLAGSC)
+	@echo "    CC  src/pit.c"
+	@gcc -c src/pit.c -o build/pit.o $(CCFLAGSC)
 	@echo "    RM  build/bootImage.elf"
 	@rm -f build/bootImage.elf
 	@echo "    LD  build/bootImage.elf"

@@ -4,6 +4,7 @@
 #include <kb.h>
 #include <port.h>
 #include <globals.h>
+#include <pit.h>
 
 idt_entry_t idt_ents[256];
 idtp_t idt_ptr;
@@ -85,6 +86,9 @@ void isr_handler(regs_t *r) {
 
 void irq_handler(regs_t *r) {
 	//printk("IRQ %x", r->int_n);
+	if (r->int_n == 32) {
+		pit_tick(r);
+	}
 	if (r->int_n == 33) {
 		char c = scancode_to_c(kb_get_scancode());
 		if (c) kbc = c;

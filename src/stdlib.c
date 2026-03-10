@@ -25,7 +25,7 @@ int itoa(uint32_t n, char *str) {
 	return 0;
 }
 
-int ftoa(double n, char *str) {
+int ftoa(double n, char *str, int p) {
 	if (!str) return 1;
 	int i = 0;
 	if (n < 0) {
@@ -41,7 +41,7 @@ int ftoa(double n, char *str) {
 		str[i++] = nbuf[j++];
 	}
 	str[i++] = '.';
-	for (int k = 0; k < 6; k++) {
+	for (int k = 0; k < p; k++) {
 		f *= 10.0; int d = (int)f;
 		str[i++] = d + '0';
 		f -= d;
