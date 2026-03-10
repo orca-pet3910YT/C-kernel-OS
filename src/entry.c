@@ -49,9 +49,6 @@ void parse_cmdline(char *input) {
 		} else if (strcmp(a, "s_out") == 0) {
 			serial_out = true;
 			printk("Serial output enabled");
-		} else if (strcmp(a, "inton") == 0) {
-			__asm__ volatile ("sti");
-			printk("Interrupts enabled");
 		} else {
 			printk("Invalid command line argument %s, ignoring", a);
 		}
@@ -102,8 +99,8 @@ void kmain(int magic, mbinfo_t *mbi) {
 	//	printk("cmdline of %x: %s", i, strings[i]);
 	//}
 	parse_cmdline(cmdline);
-	//__asm__ volatile ("sti");
-	//printk("Interrupts set to on");
+	__asm__ volatile ("sti");
+	printk("Set interrupts");
 	printk("Hello, World!");
 	set_color(0x0F);
 	printf("%s\n", logo); // globals.h:4

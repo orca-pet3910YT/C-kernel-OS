@@ -1,7 +1,7 @@
 #include <globals.h>
 #include <stdlib.h>
 double uptime = 0.0;
-const char *ver = "CkOS Beta Version 0.01 for i386 (x86-32)";
+const char *ver = "CkOS Beta Version 0.02 for i386 (x86-32) at 10th March 2026";
 const char *logo =
 " _   _  _\n"
 "/ |/| ||_`\n"
