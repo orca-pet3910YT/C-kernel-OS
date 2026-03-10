@@ -44,10 +44,11 @@ void parse_cmdline(char *input) {
 	while ((a = __split_cmdline(&b))) {
 		if (*a == '\0') continue;
 		printk("Received command line argument: %s", a);
-		if (strcmp(a, "s_in") == 0) {
+		// FIXME: serial input doesn't work!
+		/*if (strcmp(a, "s_in") == 0) {
 			serial_in = true;
 			printk("Serial input enabled");
-		} else if (strcmp(a, "s_out") == 0) {
+		} else*/ if (strcmp(a, "s_out") == 0) {
 			serial_out = true;
 			printk("Serial output enabled");
 		} else {
@@ -57,6 +58,7 @@ void parse_cmdline(char *input) {
 }
 
 void kmain(int magic, mbinfo_t *mbi) {
+	(void)magic;
 	//volatile char* video = (volatile char*)0xB8000;
 	//video[0] = 'E';
 	//video[1] = 0x07;
@@ -76,17 +78,14 @@ void kmain(int magic, mbinfo_t *mbi) {
 	//char *strings[16];
 	// FIXME: magic is 0
 	//if (magic != 0x1BADB002) panic("Incorrect Multiboot 1 magic number! Got 0x%x, should be 0x1BADB002");
-	__asm__ volatile ("cli");
-	printk("Clear interrupts");
 	kb_init();
 	printk("Initialized PS/2 BIOS keyboard");
 	gdt_init();
-	printk("GDT initialized, have fun suffering, dev of this cursed code");
+	printk("GDT initialized");
 	pic_remap();
 	printk("Remapped the PIC");
 	init_idt();
 	printk("IDT initialized");
-	printk("Be careful what kind of shit can happen now!");
 	printk("---BEGIN Command line info---");
 	if (mbi->flags & (1 << 2)) {
 		cmdline = (char*)mbi -> cmdline;
@@ -103,7 +102,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 	__asm__ volatile ("sti");
 	printk("Set interrupts");
 	init_pit();
-	printk("Initialized PIT at 10 KHz");
+	printk("Initialized PIT at 1 KHz");
 	printk("Hello, World!");
 	set_color(0x0F);
 	printf("%s\n", logo); // globals.h:4
@@ -117,7 +116,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 	for (;;) {
 		//char c = loop_until_keypress();
 		char c = kbc; // from globals
-		if (c) { putc(c); kbc = 0; } else { continue; }
+		if (c) { putc(c); kbc = 0; } else { __asm__ volatile ("hlt"); continue; }
 		if (c == '\b') {
 			if (index > 0) {
 				index--;
