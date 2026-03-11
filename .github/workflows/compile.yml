@@ -1,0 +1,19 @@
+name: Compile CkOS
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: installpkg
+      run: sudo apt install nasm xorriso
+    - name: make
+      run: sh -c "git checkout main; git pull; make"
