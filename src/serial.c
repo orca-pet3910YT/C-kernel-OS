@@ -1,6 +1,9 @@
 #include <port.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <serial.h>
+#include <globals.h>
+#include <stdlib.h>
 #define COM1 0x3F8
 
 void serial_init() {
@@ -11,6 +14,11 @@ void serial_init() {
 	outb(COM1+3, 0x03);
 	outb(COM1+2, 0xC7); // 0xC7
 	outb(COM1+4, 0x0B);
+}
+
+void serial_shutdown() {
+	serial_out = false;
+	outb(COM1+1, 0x00);
 }
 
 int transmit_fifo_empty() {

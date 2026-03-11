@@ -2,12 +2,24 @@
 #include <stdint.h>
 #include <vga.h>
 #include <power.h>
+#include <serial.h>
+#include <pic.h>
+#include <pit.h>
 
 static inline void outw(uint16_t port, uint16_t value) {
 	__asm__ volatile ("outw %0, %1" : : "a"(value), "Nd"(port));
 }
 
 int poweroff() {
+	printk("power: The system will shut down!");
+	__asm__ volatile ("cli");
+	printk("power: Disabled interrupts");
+	serial_shutdown();
+	printk("Disabled serial");
+	pic_shutdown();
+	printk("Disabled PIC");
+	pit_shutdown();
+	printk("Disabled PIT");
 	printk("power: Powering off");
 	outw(0x604, 0x2000); // new QEMU
 	outw(0xB004, 0x2000); // bochs and old QEMU

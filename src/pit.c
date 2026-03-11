@@ -8,6 +8,12 @@ void init_pit() {
 	pit_set_div(1000);
 }
 
+void pit_shutdown() {
+	outb(0x43, 0x30);
+	outb(0x40, 0x00);
+	outb(0x40, 0x00);
+}
+
 void pit_set_div(uint16_t div) {
 	uint16_t hertz = PIT_BASE/div;
 	outb(0x43, 0x36);

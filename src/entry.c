@@ -11,19 +11,7 @@
 #include <idt.h>
 #include <gdt.h>
 #include <pit.h>
-
-void pic_remap() {
-	outb(0x20, 0x11);
-	outb(0xA0, 0x11);
-	outb(0x21, 0x20);
-	outb(0xA1, 0x28);
-	outb(0x21, 0x04);
-	outb(0xA1, 0x02);
-	outb(0x21, 0x01);
-	outb(0xA1, 0x01);
-	outb(0x21, 0x00);
-	outb(0xA1, 0x00);
-}
+#include <pic.h>
 
 char *__split_cmdline(char **buffer) {
 	char *a, *b;
@@ -98,7 +86,6 @@ void kmain(int magic, mbinfo_t *mbi) {
 	//for (unsigned int i = 0; /*i < (sizeof(strings)/sizeof(strings[0]))*/ i < strn; i++) {
 	//	printk("cmdline of %x: %s", i, strings[i]);
 	//}
-	parse_cmdline(cmdline);
 	__asm__ volatile ("sti");
 	printk("Set interrupts");
 	init_pit();
