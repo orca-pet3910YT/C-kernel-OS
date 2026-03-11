@@ -1,5 +1,6 @@
 CCFLAGS = -ffreestanding -m32
 CCFLAGSC = -ffreestanding -m32 -fno-exceptions -fno-stack-protector -fno-pie -no-pie -fno-unwind-tables -fno-asynchronous-unwind-tables -I include -nostdlib -Wall -Wextra -fno-ident -Wl,--build-id=none
+.NOTPARALLEL:
 all:
 	@echo " MKDIR  build"
 	@mkdir build -p
@@ -25,6 +26,8 @@ all:
 	@gcc -c src/string.c -o build/string.o $(CCFLAGSC)
 	@echo "    CC  src/globals.c"
 	@gcc -c src/globals.c -o build/globals.o $(CCFLAGSC)
+	@echo "    CC  src/power.c"
+	@gcc -c src/power.c -o build/power.o $(CCFLAGSC)
 	@echo "    CC  src/panic.c"
 	@gcc -c src/panic.c -o build/panic.o $(CCFLAGSC)
 	@echo "  NASM  src/gdtf.s"

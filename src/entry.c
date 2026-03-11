@@ -73,7 +73,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 	printk("Refreshed VGA");
 	serial_init();
 	printk("Initialized serial at 0x3F8 (COM1)");
-        printk("Multiboot flags: %x", mbi->flags);
+	printk("Multiboot flags: %x", mbi->flags);
 	char *cmdline = NULL;
 	//char *strings[16];
 	// FIXME: magic is 0
@@ -112,6 +112,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 	//panic("This PC is ass."); // compile with this uncommented to prank people :)
 	char command[256] = {0};
 	int index = 0;
+	//int lastchar = 0;
 	printf("$ ");
 	for (;;) {
 		//char c = loop_until_keypress();
@@ -122,11 +123,19 @@ void kmain(int magic, mbinfo_t *mbi) {
 				index--;
 				command[index] = '\0';
 			}
+			//lastchar--;
 			continue;
 		}
+		/*if (c == 0x1A) {
+			if (index > 0) {
+				index--;
+			}
+			continue;
+		}*/
 		if (c != '\n') {
 			command[index++] = c;
-			command[index] = '\0';
+			command[index] = '\0'; // lastchar
+			//lastchar++;
 		}
 		if (c == '\n') {
 			if (strcmp(command, "help") == 0) {
@@ -147,10 +156,13 @@ void kmain(int magic, mbinfo_t *mbi) {
 				panic("Failed to power off; likely not a QEMU machine");
 			} else if (strcmp(command, "reboot") == 0) {
 				reboot();
+				__asm__ volatile ("hlt");
 				panic("Failed to reboot; unknown error");
 			} else if (strcmp(command, "halt") == 0) {
 				printf("System halted. It is now safe to power off.\n");
 				while (1) halt();
+			} else if (strcmp(command, "waitint") == 0) {
+				__asm__ volatile ("hlt");
 			} else if (strcmp(command, "logo") == 0) {
 				set_color(0x0F);
 				printf("%s\n", logo);
@@ -168,10 +180,11 @@ void kmain(int magic, mbinfo_t *mbi) {
 			} else if (strcmp(command, "crash") == 0) {
 				//__asm__ volatile ("int $0");
 				__asm__ volatile ("ud2");
-			} else if (index > 0) {
+			} else if (index > 0) { // lastchar
 				printf("Invalid command: %s\n", command);
 			}
 			index = 0;
+			//lastchar = 0;
 			command[0] = '\0';
 			printf("$ ");
 			continue;

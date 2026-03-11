@@ -98,6 +98,15 @@ int putc(int c) {
 			col--; buffer[row*80+col] = (color << 8) | ' ';
 			if (serial_out) sputc(c);
 		}
+	} else if (c == 0x1E) { // up
+		return 0;
+	} else if (c == 0x1F) { // down
+		return 0;
+	} else if (c == 0x1A) { // left
+		/*if (col < 2) return 0;
+		col--; set_cursor_pos(row, col); return 0x1A;*/
+	} else if (c == 0x1B) {
+		return 0;
 	} else if (c == '\t') {
 		for (int i = 0; i < tab_indent; i++) {
 			putc(' '); if (serial_out) sputc(' ');
