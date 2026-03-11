@@ -33,8 +33,16 @@ Likely this can be fixed by instead incrementing a global *tick* counter and cal
 ## Graphics
 This driver is one of the longest ones. There is multiple ways to print, like putc, puts, printf, print, printk etc.
 
+A typical 80x25 screen is made of 2000 cells or 4000 bytes. A cell has a high byte (the color) and low byte (the character). The VGA colors are the standard 16 color RGB palette.
+
+The color byte's left hex digit is the background color and the right digit is the foreground. Usually you want 0x07 because that's the typical color used in bootloaders.
+
 Printing a single character requires putc to check for special characters like the newline, tab, backspace etc. That's because putting them directly in the VGA text buffer at **0xB8000** will print a control character.
 
 The codepage used is cp737. You can search it online and find what exactly gets printed.
 
 You need column and row variables which can't go higher than 80 and 25 respectively.
+These are then set to the hardware cursor position by sending 4 bytes to ports 0x3D4 and 0x3D5.
+
+## Power
+This is the least driver-like part of this section. It contains self-explanatory functions: `poweroff()` (QEMU only), `reboot()` and `halt()`.
