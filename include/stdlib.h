@@ -7,5 +7,5 @@ int htoa(uint32_t n, char *str);
 #define NULL 0
 #define true 1
 #define false 0
-typedef _Bool bool;
+//typedef _Bool bool;
 #endif
