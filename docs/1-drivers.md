@@ -46,3 +46,9 @@ These are then set to the hardware cursor position by sending 4 bytes to ports 0
 
 ## Power
 This is the least driver-like part of this section. It contains self-explanatory functions: `poweroff()` (QEMU only), `reboot()` and `halt()`.
+
+## Serial
+This is like VGA but much simpler - you just get the baud right. In this kernel it's 115200 baud. You use sputc and sgetc for printing and receiving characters on serial.
+
+## Port
+Again, not much to talk about - you use outb to output a byte and inb to read a byte from a specified port.
