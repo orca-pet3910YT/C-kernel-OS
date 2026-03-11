@@ -6,3 +6,7 @@ It runs just fine. But *how*? There will be more sections in this place that exp
 Have fun testing while you wait!
 
 There is more coming soon to this docs place - this is WIP.
+
+## Sections
+- 1-drivers.md
+- 2-kernel-core.md
