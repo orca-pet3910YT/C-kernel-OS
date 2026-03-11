@@ -47,7 +47,6 @@ all:
 	@cp build/bootImage.elf iso
 	@echo "  GRUB  build/boot.iso"
 	@grub-mkrescue -d /usr/lib/grub/i386-pc -o build/boot.iso iso
-	@echo "All done! Run `make qemu-g` to test."
 
 qemu-g:
 	@echo "  QEMU  build/boot.iso"

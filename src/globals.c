@@ -11,6 +11,6 @@ const char *credits =
 "        axrxvm: numerous helpful resources about aOS\n"
 "      oslayout: gave me a copy of PotatoOS for studying\n"
 "           you: for usage of this experimental OS";
-bool serial_in = false; // true and false is defined in stdlib.h. while this is not the C standard, it makes you have to import less headers.
-bool serial_out = false;
+char serial_in = false; // true and false is defined in stdlib.h. while this is not the C standard, it makes you have to import less headers.
+char serial_out = false;
 volatile char kbc = 0;
