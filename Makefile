@@ -1,4 +1,4 @@
-CCFLAGS = -ffreestanding -target i386-elf -fno-pie -fno-pic
+CCFLAGS = -target i386-elf -fno-pie -fno-pic
 CCFLAGSC = -ffreestanding -target i386-elf -fno-exceptions -fno-stack-protector -fno-pie -fno-pic -fno-unwind-tables -fno-asynchronous-unwind-tables -I include -nostdlib -Wall -Wextra -fno-ident
 .NOTPARALLEL:
 all:
