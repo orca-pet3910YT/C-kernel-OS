@@ -1,48 +1,48 @@
-CCFLAGS = -ffreestanding -m32
-CCFLAGSC = -ffreestanding -m32 -fno-exceptions -fno-stack-protector -fno-pie -no-pie -fno-unwind-tables -fno-asynchronous-unwind-tables -I include -nostdlib -Wall -Wextra -fno-ident -Wl,--build-id=none
+CCFLAGS = -ffreestanding -target i386-elf -fno-pie -fno-pic
+CCFLAGSC = -ffreestanding -target i386-elf -fno-exceptions -fno-stack-protector -fno-pie -fno-pic -fno-unwind-tables -fno-asynchronous-unwind-tables -I include -nostdlib -Wall -Wextra -fno-ident
 .NOTPARALLEL:
 all:
 	@echo " MKDIR  build"
 	@mkdir build -p
 	@echo "    AS  src/boot.s"
-	@gcc -c src/boot.s -o build/boot.o $(CCFLAGS)
+	@clang -c src/boot.s -o build/boot.o $(CCFLAGS)
 	@echo "  NASM  src/idtld.s"
 	@nasm -f elf32 src/idtld.s -o build/idtld.o
 	@echo "    CC  src/idt.c"
-	@gcc -c src/idt.c -o build/idt.o $(CCFLAGSC)
+	@clang -c src/idt.c -o build/idt.o $(CCFLAGSC)
 	@echo "    CC  src/vga.c"
-	@gcc -c src/vga.c -o build/vga.o $(CCFLAGSC)
+	@clang -c src/vga.c -o build/vga.o $(CCFLAGSC)
 	@echo "    CC  src/entry.c"
-	@gcc -c src/entry.c -o build/entry.o $(CCFLAGSC)
+	@clang -c src/entry.c -o build/entry.o $(CCFLAGSC)
 	@echo "    CC  src/stdlib.c"
-	@gcc -c src/stdlib.c -o build/stdlib.o $(CCFLAGSC)
+	@clang -c src/stdlib.c -o build/stdlib.o $(CCFLAGSC)
 	@echo "    CC  src/serial.c"
-	@gcc -c src/serial.c -o build/serial.o $(CCFLAGSC)
+	@clang -c src/serial.c -o build/serial.o $(CCFLAGSC)
 	@echo "    CC  src/port.c"
-	@gcc -c src/port.c -o build/port.o $(CCFLAGSC)
+	@clang -c src/port.c -o build/port.o $(CCFLAGSC)
 	@echo "    CC  src/kb.c"
-	@gcc -c src/kb.c -o build/kb.o $(CCFLAGSC)
+	@clang -c src/kb.c -o build/kb.o $(CCFLAGSC)
 	@echo "    CC  src/string.c"
-	@gcc -c src/string.c -o build/string.o $(CCFLAGSC)
+	@clang -c src/string.c -o build/string.o $(CCFLAGSC)
 	@echo "    CC  src/globals.c"
-	@gcc -c src/globals.c -o build/globals.o $(CCFLAGSC)
+	@clang -c src/globals.c -o build/globals.o $(CCFLAGSC)
 	@echo "    CC  src/power.c"
-	@gcc -c src/power.c -o build/power.o $(CCFLAGSC)
+	@clang -c src/power.c -o build/power.o $(CCFLAGSC)
 	@echo "    CC  src/panic.c"
-	@gcc -c src/panic.c -o build/panic.o $(CCFLAGSC)
+	@clang -c src/panic.c -o build/panic.o $(CCFLAGSC)
 	@echo "  NASM  src/gdtf.s"
 	@nasm -f elf32 src/gdtf.s -o build/gdtf.o
 	@echo "    CC  src/gdt.c"
-	@gcc -c src/gdt.c -o build/gdt.o $(CCFLAGSC)
+	@clang -c src/gdt.c -o build/gdt.o $(CCFLAGSC)
 	@echo "    CC  src/pit.c"
-	@gcc -c src/pit.c -o build/pit.o $(CCFLAGSC)
+	@clang -c src/pit.c -o build/pit.o $(CCFLAGSC)
 	@echo "    CC  src/pic.c"
-	@gcc -c src/pic.c -o build/pic.o $(CCFLAGSC)
+	@clang -c src/pic.c -o build/pic.o $(CCFLAGSC)
 	@echo "    RM  build/bootImage.elf"
 	@rm -f build/bootImage.elf
 	@echo "    LD  build/bootImage.elf"
 	@echo "KERNEL: Your kernel is ready"
-	@cd build && gcc -T ../kernel.ld *.o -o bootImage.elf $(CCFLAGSC)
+	@cd build && ld.lld -m elf_i386 -T ../kernel.ld *.o -o bootImage.elf # clang -fuse-ld=lld -T ../kernel.ld *.o -o bootImage.elf -target i386-elf -ffreestanding -nostdlib -no-pie -Wl,--build-id=none -m32
 	@echo "  COPY  build/bootImage.elf"
 	@cp build/bootImage.elf iso
 	@echo "  GRUB  build/boot.iso"
