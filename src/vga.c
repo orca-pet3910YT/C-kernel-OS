@@ -83,6 +83,7 @@ void scroll_once() {
 
 int putc(int c) {
 	if (c == -1) return -1;
+	//set_color(c); // don't uncomment unless you love unicorn puke
 	if (c == '\n') {
 		col = 0; row++;
 		if (serial_out) sputc('\n');
