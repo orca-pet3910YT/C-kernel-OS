@@ -10,3 +10,6 @@ There is more coming soon to this docs place - this is WIP.
 ## Sections
 - 1-drivers.md
 - 2-kernel-core.md
+
+## Exceptions
+- stat_kmain_return: "BAD C: kmain returned"
