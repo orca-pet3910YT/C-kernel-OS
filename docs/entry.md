@@ -12,4 +12,4 @@ There is more coming soon to this docs place - this is WIP.
 - 2-kernel-core.md
 
 ## Exceptions
-- stat_kmain_return: "BAD C: kmain returned"
+- stat_kmain_return: "BAD C: \`kmain\` returned"
