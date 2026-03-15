@@ -9,3 +9,9 @@ The features in this OS are... pretty lacking, but that'll be fixed over time.
 - Test all changes to make sure they all work. Don't waste others' valuable time for stuff that doesn't compile.
 - Be prepared to wait. We'll make sure to respond quickly to PRs and issues.
 - Have fun testing!
+
+## Other projects worth visiting
+
+- [aOS - a bare metal OS from scratch by @axrxvm](https://github.com/axrxvm/aos)
+- [CedarOS - another bare metal OS with a custom bootloader by @CedarDude](https://github.com/CedarDude/Cedar-OS)
+- [kernel-OS - my previous attempt at an assembly kernel](https://github.com/orca-pet3910YT/kernel-OS)
