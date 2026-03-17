@@ -16,7 +16,6 @@ void panic(const char *msg, ...) {
 	printk("---[ end KERNEL PANIC - system halted!");
 	printk(msg); // i trust you are mature and won't put weird shit on purpose into the msg buffer
 	printk("]---");*/
-	can_scroll = 0;
 	set_color(0x1F);
 	const char *msg2 = msg;
 	char buf[1024]; char buf2[1084]; size_t i = 0; size_t j = 0;
