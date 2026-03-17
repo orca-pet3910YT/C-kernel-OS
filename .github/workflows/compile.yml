@@ -16,4 +16,4 @@ jobs:
     - name: installpkg
       run: sudo apt install nasm xorriso clang lld neofetch
     - name: make
-      run: sh -c "git checkout main; git pull; make; neofetch"
+      run: sh -c "git checkout main; git pull; make"
