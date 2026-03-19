@@ -4,7 +4,7 @@ CCFLAGSC = -ffreestanding -target i386-elf -fno-exceptions -fno-stack-protector 
 
 all:
 	@echo "Running scripts/gen_ver.sh"
-	@scripts/gen_ver.sh
+	@bash scripts/gen_ver.sh
 	@echo " MKDIR  build"
 	@mkdir build -p
 	@echo "    AS  src/boot.s"

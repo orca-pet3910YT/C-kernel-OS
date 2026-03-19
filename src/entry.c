@@ -57,10 +57,8 @@ void kmain(int magic, mbinfo_t *mbi) {
 	//char string_thing[12] = {0};
 	//ftoa(0.25, string_thing);
 	//puts(string_thing);
-	clear_screen();
 	printk(ver);
 	printk(CKOS_BLD); // build info from scripts/gen_ver.sh
-	printk("Refreshed VGA");
 	serial_init();
 	printk("Initialized serial at 0x3F8 (COM1)");
 	printk("Multiboot flags: %x", mbi->flags);

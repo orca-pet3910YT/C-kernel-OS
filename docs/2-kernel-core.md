@@ -7,11 +7,11 @@ The kernel start is `_start()` in src/boot.s. It sets up the stack and calls `km
 ### Stages
 - `clear_screen()`
 - `serial_init()`
+- `parse_cmdline(cmdline)`
 - `kb_init()`
 - `gdt_init()`
 - `pic_remap()`
 - `init_idt()`
-- `parse_cmdline(cmdline)`
 - `__asm__ volatile ("sti")`
 - `init_pit()`
 

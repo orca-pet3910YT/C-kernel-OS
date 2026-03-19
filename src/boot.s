@@ -19,6 +19,9 @@ _start:
 	mov $stack_top, %esp
 	cli
 	cld
+	push $stat_boot_init
+	call printk
+	pop %ecx
 	push %ebx
 	push %eax
 	call kmain
@@ -31,6 +34,8 @@ hang:
 .section .rodata
 stat_kmain_return:
 .asciz "BAD C: `kmain` returned"
+stat_boot_init:
+.asciz "Boot stub: kernel initialized"
 
 .section .build_note, "a", @note
 .align 4
