@@ -2,8 +2,7 @@
 global isr%1
 isr%1:
         cli
-        push dword 0 ; normally use this when there is no error code like here. you can omit this instruction
-                ; in handlers with error codes
+        push dword 0 ; normally use this when there is no error code like here.
         push dword %1 ; %1 is the value of the int
         jmp common_isr ; the common stub
 %endmacro
@@ -27,15 +26,19 @@ common_isr:
         mov es, ax
         mov fs, ax
         mov gs, ax
-        cld
-        push esp
+	push esp
         call isr_handler
         add esp, 4
-        pop eax
-        mov ds, ax
-        mov es, ax
-        mov fs, ax
-        mov gs, ax
+	pop eax
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+        ;pop eax
+        ;mov ds, ax
+        ;mov es, ax
+        ;mov fs, ax
+        ;mov gs, ax
         popa
         add esp, 8
         ; generally, don't reenable interrupts. they might cause more problems if the faulty instruction
@@ -113,6 +116,7 @@ extern irq_handler
 
 common_irq:
         pusha ; push GPRs
+	xor eax, eax
         mov ax, ds
         push eax
         mov ax, 0x10

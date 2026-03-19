@@ -1,7 +1,10 @@
 CCFLAGS = -target i386-elf -fno-pie -fno-pic
 CCFLAGSC = -ffreestanding -target i386-elf -fno-exceptions -fno-stack-protector -fno-pie -fno-pic -fno-unwind-tables -fno-asynchronous-unwind-tables -I include -nostdlib -Wall -Wextra -fno-ident
 .NOTPARALLEL:
+
 all:
+	@echo "Running scripts/gen_ver.sh"
+	@scripts/gen_ver.sh
 	@echo " MKDIR  build"
 	@mkdir build -p
 	@echo "    AS  src/boot.s"
@@ -58,7 +61,7 @@ qemu:
 
 cl:
 	@echo -n "lines of code in total: "
-	@grep -R "" src/*.* include/*.* Makefile kernel.ld iso/boot/grub/grub.cfg | wc -l
+	@grep -R "" src/*.c src/*.s include/*.h Makefile kernel.ld iso/boot/grub/grub.cfg | wc -l
 
 clean:
 	@echo " CLEAN  build"

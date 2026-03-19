@@ -20,8 +20,8 @@ struct regs_s {
 	uint32_t ds;
 	uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax;
 	uint32_t int_n, code;
-	uint32_t eip, cs, eflags, useresp, ss;
-} __attribute__((packed));
+	uint32_t eip, cs, eflags;
+};
 typedef struct regs_s regs_t;
 
 void init_idt();

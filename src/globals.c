@@ -14,3 +14,4 @@ const char *credits =
 char serial_in = false; // true and false is defined in stdlib.h. while this is not the C standard, it makes you have to import less headers.
 char serial_out = false;
 volatile char kbc = 0;
+// i'm sorry fellow C developers for this shitty solution but i just have to do this

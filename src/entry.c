@@ -12,6 +12,7 @@
 #include <gdt.h>
 #include <pit.h>
 #include <pic.h>
+#include <generated/__GENVER.h>
 
 char *__split_cmdline(char **buffer) {
 	char *a, *b;
@@ -58,6 +59,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 	//puts(string_thing);
 	clear_screen();
 	printk(ver);
+	printk(CKOS_BLD); // build info from scripts/gen_ver.sh
 	printk("Refreshed VGA");
 	serial_init();
 	printk("Initialized serial at 0x3F8 (COM1)");
@@ -66,6 +68,11 @@ void kmain(int magic, mbinfo_t *mbi) {
 	//char *strings[16];
 	// FIXME: magic is 0
 	//if (magic != 0x1BADB002) panic("Incorrect Multiboot 1 magic number! Got 0x%x, should be 0x1BADB002");
+	if (mbi->flags & (1 << 2)) {
+		cmdline = (char*)mbi -> cmdline;
+		printk("Command line: %s", cmdline);
+	}
+	parse_cmdline(cmdline);
 	kb_init();
 	printk("Initialized PS/2 BIOS keyboard");
 	gdt_init();
@@ -75,11 +82,6 @@ void kmain(int magic, mbinfo_t *mbi) {
 	init_idt();
 	printk("IDT initialized");
 	printk("---BEGIN Command line info---");
-	if (mbi->flags & (1 << 2)) {
-		cmdline = (char*)mbi -> cmdline;
-		printk("Command line: %s", cmdline);
-	}
-	parse_cmdline(cmdline);
 	printk("Parsed command line provided by bootloader");
 	printk("--- END Command line info ---");
 	//unsigned int strn = (unsigned int)split(cmdline, ' ', strings, 15);
@@ -90,6 +92,8 @@ void kmain(int magic, mbinfo_t *mbi) {
 	printk("Set interrupts");
 	init_pit();
 	printk("Initialized PIT at 1 KHz");
+	printk("isr6(): %x", isr6);
+	printk("isr0(): %x", isr0);
 	printk("Hello, World!");
 	set_color(0x0F);
 	printf("%s\n", logo); // globals.h:4
@@ -112,6 +116,9 @@ void kmain(int magic, mbinfo_t *mbi) {
 			}
 			//lastchar--;
 			continue;
+		}
+		if (c == 0x1A || c == 0x1B || c == 0x1E || c == 0x1F) { // all of these are arrow keys
+			continue; // arrow handling is painful in our world
 		}
 		/*if (c == 0x1A) {
 			if (index > 0) {
@@ -166,7 +173,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 				printf(credits);
 			} else if (strcmp(command, "crash") == 0) {
 				//__asm__ volatile ("int $0");
-				__asm__ volatile ("ud2");
+				__asm__ volatile ("cli; ud2");
 			} else if (index > 0) { // lastchar
 				printf("Invalid command: %s\n", command);
 			}

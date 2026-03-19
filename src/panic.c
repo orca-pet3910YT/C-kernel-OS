@@ -1,6 +1,20 @@
 #include <vga.h>
 #include <panic.h>
 #include <stddef.h>
+#include <stdarg.h>
+
+char __panic_buf[1024];
+char __panic_buf2[1084];
+size_t __panic_i = 0; size_t __panic_j = 0;
+const char *__panic_pre = "*** PANIC *** <";
+const char *__panic_post = "> - system halted!";
+const char *__panic__pre = "---[ end *** PANIC *** <";
+const char *__panic__post = "> - system halted! ]---";
+const char *msg2;
+
+// panic rewrites: 4
+// please increment the above number
+// in an event of a big update to panic
 
 void panic(const char *msg, ...) {
 	__asm__ volatile ("cli");
@@ -16,23 +30,21 @@ void panic(const char *msg, ...) {
 	printk("---[ end KERNEL PANIC - system halted!");
 	printk(msg); // i trust you are mature and won't put weird shit on purpose into the msg buffer
 	printk("]---");*/
+	va_list params;
+	va_start(params, msg);
 	set_color(0x1F);
-	const char *msg2 = msg;
-	char buf[1024]; char buf2[1084]; size_t i = 0; size_t j = 0;
-	const char *pre = "*** PANIC *** <";
-	const char *post = "> - system halted!";
-	const char *_pre = "---[ end *** PANIC *** <";
-	const char *_post = "> - system halted! ]---";
-	while (*pre && i < 1023) buf[i++] = *pre++;
-	while (*msg && i < 1023) buf[i++] = *msg++;
-	while (*post && i < 1023) buf[i++] = *post++;
-	buf[i] = '\0';
-	printk(buf);
+	msg2 = msg;
+	while (*__panic_pre && __panic_i < 1023) __panic_buf[__panic_i++] = *__panic_pre++;
+	while (*msg && __panic_i < 1023) __panic_buf[__panic_i++] = *msg++;
+	while (*__panic_post && __panic_i < 1023) __panic_buf[__panic_i++] = *__panic_post++;
+	__panic_buf[__panic_i] = '\0';
+	cprintk(__panic_buf, params);
 	printk("[No info available]");
-	while (*_pre && j < 1023) buf2[j++] = *_pre++;
-	while (*msg2 && j < 1023) buf2[j++] = *msg2++;
-	while (*_post && j < 1023) buf2[j++] = *_post++;
-	buf2[j] = '\0';
-	printk(buf2);
+	while (*__panic__pre && __panic_j < 1023) __panic_buf2[__panic_j++] = *__panic__pre++;
+	while (*msg2 && __panic_j < 1023) __panic_buf2[__panic_j++] = *msg2++;
+	while (*__panic__post && __panic_j < 1023) __panic_buf2[__panic_j++] = *__panic__post++;
+	__panic_buf2[__panic_j] = '\0';
+	cprintk(__panic_buf2, params);
+	va_end(params);
 	__asm__ volatile ("hlt");
 }

@@ -5,6 +5,7 @@
 #include <port.h>
 #include <globals.h>
 #include <pit.h>
+#include <string.h>
 
 idt_entry_t idt_ents[256];
 idtp_t idt_ptr;
@@ -15,9 +16,11 @@ static void idt_set_gate(uint8_t n, uint32_t b, uint16_t sel, uint8_t flags) {
 	idt_ents[n].selector = sel;
 	idt_ents[n].always_0 = 0;
 	idt_ents[n].flags = flags;
+	//printk("idt: idt %x: hi=%x lo=%x sel=%x flags=%x", n, idt_ents[n].base_high, idt_ents[n].base_low, sel, flags);
 }
 
 void init_idt() {
+	printk("idt: idt_entry_t: %x", sizeof(idt_entry_t));
 	idt_ptr.limit = sizeof(idt_entry_t)*256-1;
 	idt_ptr.base = (uint32_t)&idt_ents;
 	for (int i = 0; i < 256; i++) {
@@ -81,7 +84,9 @@ void init_idt() {
 }
 
 void isr_handler(regs_t *r) {
-	panic("ISR occured! INT %x EIP %x CODE %x", r->int_n, r->eip, r->code);
+	regs_t altr;
+	memcpy(&altr, r, sizeof(regs_t));
+	panic("ISR occured! INT %x EIP %x CODE %x", (&altr)->int_n, (&altr)->eip, (&altr)->code);
 }
 
 void irq_handler(regs_t *r) {
