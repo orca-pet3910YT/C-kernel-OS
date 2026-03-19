@@ -1,0 +1,4 @@
+# auto-generated build headers
+include/generated/
+# build objects
+build/
