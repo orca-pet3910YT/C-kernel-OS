@@ -238,19 +238,19 @@ int printf(const char *restrict format, ...) {
 int printk(const char* str, ...) {
 	va_list params;
 	va_start(params, str);
-        char buf[1024] = {0};
-        set_ftimestamp(uptime, buf);
-        int i = strlen(buf);
-        int j = 0;
-        buf[i++] = ' ';
-        while (str[j] && i < 1022) {
-                buf[i++] = str[j++];
-        }
-        buf[i] = '\n';
+	char buf[1024] = {0};
+	set_ftimestamp(uptime, buf);
+	int i = strlen(buf);
+	int j = 0;
+	buf[i++] = ' ';
+	while (str[j] && i < 1022) {
+		buf[i++] = str[j++];
+	}
+	buf[i] = '\n';
 	int r = cprintf(buf, params);
 	va_end(params);
-        return r;
-        //sputs(buf); // this relies on early serial logging. DO NOT USE printk BEFORE INITIALIZING SERIAL!
+	return r;
+	//sputs(buf); // this relies on early serial logging. DO NOT USE printk BEFORE INITIALIZING SERIAL!
 }
 
 int cprintk(const char *str, va_list params) {
