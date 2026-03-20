@@ -7,30 +7,30 @@ SECTIONS
 
 	.text ALIGN(4K):
 	{
-	KEEP(*(.multiboot))
-	*(.text*)
-	*(.rodata)
-	*(.data)
+		KEEP(*(.multiboot))
+		*(.text*)
+		*(.rodata)
+		*(.data)
 	}
 
 	.rodata ALIGN(4K) :
 	{
-	*(.rodata*)
+		*(.rodata*)
 	}
 
 	.data ALIGN(4K) :
 	{
-	*(.data*)
+		*(.data*)
 	}
 
 	.bss ALIGN(4K) :
 	{
-	*(.bss*)
-	*(COMMON)
+		*(.bss*)
+		*(COMMON)
 	}
 
 	.build_note ALIGN(4) :
 	{
-	*(.build_note)
+		*(.build_note)
 	}
 }
