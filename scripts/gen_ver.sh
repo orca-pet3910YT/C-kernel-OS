@@ -1,6 +1,6 @@
 #!/bin/bash
 date_bld=$(date)
-echo "   GEN  include/generated/__GENVER.h"
+echo "Generating include/generated/__GENVER.h"
 mkdir -p include/generated
 tr -d '\r' > include/generated/__GENVER.h <<EOF
 #ifndef CKOS_BLD

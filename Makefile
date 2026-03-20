@@ -12,6 +12,10 @@ all: build/boot.iso
 build:
 	@echo "Create build/"
 	@mkdir -p build
+	@echo "Create include/generated/"
+	@mkdir -p include/generated
+	@echo "Running scripts/gen_ver.sh"
+	@scripts/gen_ver.sh
 
 build/%.o: src/%.c | build
 	@echo "Compiling $<"
@@ -37,8 +41,12 @@ build/boot.iso: build/bootImage.elf
 
 clean:
 	@echo "Cleaning..."
-	@rm -rf build iso/bootImage.elf
+	@rm -rf build iso/bootImage.elf include/generated
 
 qemu:
 	@echo "Running in QEMU"
 	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial stdio
+
+cl:
+	@echo -n "lines of code in total: "
+	@grep -R "" src/*.c src/*.s src/*.asm include/*.h Makefile kernel.ld iso/boot/grub/grub.cfg | wc -l
