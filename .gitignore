@@ -1,5 +1,4 @@
 # auto-generated build headers
-include/generated/
 include/generated/*.h
 # build objects
 build/
