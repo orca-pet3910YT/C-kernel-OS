@@ -2,3 +2,5 @@
 include/generated/*.h
 # build objects
 build/
+# kernel image
+iso/bootImage.elf
