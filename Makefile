@@ -6,14 +6,19 @@ SRC_ASM := $(wildcard src/*.asm)
 OBJECTS := $(patsubst src/%.c,build/%.o,$(wildcard src/*.c)) $(patsubst src/%.s,build/%.o,$(wildcard src/*.s)) $(patsubst src/%.asm,build/%.o,$(SRC_ASM))
 
 .NOTPARALLEL:
+.PHONY: build
 
-all: build/boot.iso
+all: build build/boot.iso
 
 build:
 	@echo "Create build/"
 	@mkdir -p build
 	@echo "Create include/generated/"
 	@mkdir -p include/generated
+	@echo "Setting script permissions"
+	@chmod +x scripts/*.sh
+	@echo "Running scripts/check_dirs.sh"
+	@scripts/check_dirs.sh
 	@echo "Running scripts/gen_ver.sh"
 	@scripts/gen_ver.sh
 
