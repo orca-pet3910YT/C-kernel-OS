@@ -1,49 +1,49 @@
 %macro ISR_NO_CODE 1
 global isr%1
 isr%1:
-        cli
-        push dword 0 ; normally use this when there is no error code like here.
-        push dword %1 ; %1 is the value of the int
-        jmp common_isr ; the common stub
+	cli
+	push dword 0 ; normally use this when there is no error code like here.
+	push dword %1 ; %1 is the value of the int
+	jmp common_isr ; the common stub
 %endmacro
 
 %macro ISR_CODE 1
 global isr%1
 isr%1:
-        cli
-        push dword %1 ; again, %1 is the value of the int
-        jmp common_isr
+	cli
+	push dword %1 ; again, %1 is the value of the int
+	jmp common_isr
 %endmacro
 
 extern isr_handler
 
 common_isr:
-        pusha
-        mov ax, ds
-        push eax
-        mov ax, 0x10
-        mov ds, ax
-        mov es, ax
-        mov fs, ax
-        mov gs, ax
+	pusha
+	mov ax, ds
+	push eax
+	mov ax, 0x10
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
 	push esp
-        call isr_handler
-        add esp, 4
+	call isr_handler
+	add esp, 4
 	pop eax
 	mov ds, ax
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
-        ;pop eax
-        ;mov ds, ax
-        ;mov es, ax
-        ;mov fs, ax
-        ;mov gs, ax
-        popa
-        add esp, 8
-        ; generally, don't reenable interrupts. they might cause more problems if the faulty instruction
-        ; triggers something again.
-        iret
+	;pop eax
+	;mov ds, ax
+	;mov es, ax
+	;mov fs, ax
+	;mov gs, ax
+	popa
+	add esp, 8
+	; generally, don't reenable interrupts. they might cause more problems if the faulty instruction
+	; triggers something again.
+	iret
 
 ISR_NO_CODE 0
 ISR_NO_CODE 1
@@ -80,17 +80,17 @@ ISR_NO_CODE 31
 
 global load_idt
 load_idt:
-        mov eax, [esp+4]
-        lidt [eax]
-        ret
+	mov eax, [esp+4]
+	lidt [eax]
+	ret
 
 %macro IRQ_NOCODE 1
 global isr%1
 isr%1:
-        cli
-        push dword 0 ; IRQs have no codes
-        push dword %1 ; value of the int.
-        jmp common_irq
+	cli
+	push dword 0 ; IRQs have no codes
+	push dword %1 ; value of the int.
+	jmp common_irq
 %endmacro
 
 ; 32 - 47
@@ -115,25 +115,25 @@ IRQ_NOCODE 47
 extern irq_handler
 
 common_irq:
-        pusha ; push GPRs
+	pusha ; push GPRs
 	xor eax, eax
-        mov ax, ds
-        push eax
-        mov ax, 0x10
-        mov ds, ax
-        mov es, ax
-        mov fs, ax
-        mov gs, ax
-        cld
-        push esp
-        call irq_handler
-        add esp, 4
-        pop eax
-        mov ds, ax
-        mov es, ax
-        mov fs, ax
-        mov gs, ax
-        popa
-        add esp, 8
-        iret ; NOT just ret - remember, we're in an int
+	mov ax, ds
+	push eax
+	mov ax, 0x10
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	cld
+	push esp
+	call irq_handler
+	add esp, 4
+	pop eax
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+	mov gs, ax
+	popa
+	add esp, 8
+	iret ; NOT just ret - remember, we're in an int
 
