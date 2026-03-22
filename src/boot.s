@@ -24,6 +24,9 @@ _start:
 	orl $0x0002, %eax
 	mov %eax, %cr0
 
+	fwait
+	fninit
+
 	mov $stack_top, %esp
 	cli
 	cld
