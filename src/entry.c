@@ -70,7 +70,10 @@ void kmain(int magic, mbinfo_t *mbi) {
 		cmdline = (char*)mbi -> cmdline;
 		printk("Command line: %s", cmdline);
 	}
+	printk("---BEGIN Command line info---");
 	parse_cmdline(cmdline);
+	printk("Parsed command line provided by bootloader");
+	printk("--- END Command line info ---");
 	kb_init();
 	printk("Initialized PS/2 BIOS keyboard");
 	gdt_init();
@@ -79,9 +82,6 @@ void kmain(int magic, mbinfo_t *mbi) {
 	printk("Remapped the PIC");
 	init_idt();
 	printk("IDT initialized");
-	printk("---BEGIN Command line info---");
-	printk("Parsed command line provided by bootloader");
-	printk("--- END Command line info ---");
 	//unsigned int strn = (unsigned int)split(cmdline, ' ', strings, 15);
 	//for (unsigned int i = 0; /*i < (sizeof(strings)/sizeof(strings[0]))*/ i < strn; i++) {
 	//	printk("cmdline of %x: %s", i, strings[i]);
