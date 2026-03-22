@@ -16,6 +16,14 @@ stack_top:
 .extern kmain
 .extern panic
 _start:
+	mov %cr4, %eax
+	orl $0x600, %eax
+	mov %eax, %cr4
+	mov %cr0, %eax
+	andl $0xFFFFFFFB, %eax
+	orl $0x0002, %eax
+	mov %eax, %cr0
+
 	mov $stack_top, %esp
 	cli
 	cld

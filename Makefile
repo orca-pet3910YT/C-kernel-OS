@@ -52,6 +52,10 @@ qemu:
 	@echo "Running in QEMU"
 	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial stdio
 
+qemu-vnc:
+	@echo "Running in QEMU (VNC 1)"
+	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial stdio -display vnc=:1 -d int
+
 cl:
 	@echo -n "lines of code in total: "
 	@grep -R "" src/*.c src/*.s src/*.asm include/*.h Makefile kernel.ld iso/boot/grub/grub.cfg | wc -l
