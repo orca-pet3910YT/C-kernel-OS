@@ -23,13 +23,13 @@ _start:
 	andl $0xFFFFFFFB, %eax
 	orl $0x0002, %eax
 	mov %eax, %cr0
-
-	fwait
-	fninit
-
 	mov $stack_top, %esp
 	cli
 	cld
+	fwait
+	fninit
+	push $stat_boot_fpu_init
+	call printk
 	push $stat_boot_init
 	call printk
 	pop %ecx
@@ -47,7 +47,8 @@ stat_kmain_return:
 .asciz "BAD C: `kmain` returned"
 stat_boot_init:
 .asciz "Boot stub: kernel initialized"
-
+stat_boot_fpu_init:
+.asciz "Boot stub: x87 FPU initialized"
 .section .build_note, "a", @note
 .align 4
 .long 8

@@ -3,6 +3,8 @@
 #include <stddef.h>
 #include <stdarg.h>
 
+// `__panic_` variables. they are defined here to avoid putting them in the stack
+
 char __panic_buf[1024];
 char __panic_buf2[1084];
 size_t __panic_i = 0; size_t __panic_j = 0;
@@ -34,16 +36,19 @@ void panic(const char *msg, ...) {
 	va_start(params, msg);
 	set_color(0x1F);
 	msg2 = msg;
+	// first header
 	while (*__panic_pre && __panic_i < 1023) __panic_buf[__panic_i++] = *__panic_pre++;
 	while (*msg && __panic_i < 1023) __panic_buf[__panic_i++] = *msg++;
 	while (*__panic_post && __panic_i < 1023) __panic_buf[__panic_i++] = *__panic_post++;
 	__panic_buf[__panic_i] = '\0';
 	cprintk(__panic_buf, params);
+	// TODO: stack trace of function addresses + distinguish from regular values
 	printk("[No info available]");
+	// second header (or the end header
 	while (*__panic__pre && __panic_j < 1023) __panic_buf2[__panic_j++] = *__panic__pre++;
 	while (*msg2 && __panic_j < 1023) __panic_buf2[__panic_j++] = *msg2++;
 	while (*__panic__post && __panic_j < 1023) __panic_buf2[__panic_j++] = *__panic__post++;
-	__panic_buf2[__panic_j] = '\0';
+	__panic_buf2[__panic_j] = '\0'; // NULL terminate
 	cprintk(__panic_buf2, params);
 	va_end(params);
 	__asm__ volatile ("hlt");
