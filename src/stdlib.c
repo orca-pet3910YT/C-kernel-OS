@@ -51,10 +51,11 @@ int ftoa(double n, char *str, int p) {
 
 char *htoa(uint32_t n, char *str) {
 	char digits[] = "0123456789ABCDEF";
-	for (int i = 0; i < 8; i++) {
+	str[0] = '0'; str[1] = 'x';
+	for (int i = 2; i < 10; i++) {
 		int shift = (7-i)*4;
 		str[i] = digits[(n >> shift) & 0xF];
 	}
-	str[8] = '\0';
+	str[10] = '\0';
 	return str;
 }
