@@ -216,6 +216,12 @@ int cprintf(const char *restrict format, va_list parameters) {
 			if (!print(buf, 10)) return -1;
 			written += 10;
 			// TODO: finish
+		} else if (*format == 'd') {
+			format++; int value = va_arg(parameters, int);
+			char buf[12]; itoa(value, buf);
+			if (maxrem < strlen(buf)) return -1;
+			if (!print(buf, strlen(buf))) return -1;
+			written += strlen(buf);
 		} else {
 			format = format_begun_at;
 			size_t len = strlen(format);

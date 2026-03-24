@@ -179,6 +179,8 @@ void kmain(int magic, mbinfo_t *mbi) {
 			} else if (strcmp(command, "cpuinfo") == 0) {
 				char *vendor = get_cpu_vendor();
 				printk("CPU vendor: %s", vendor);
+			} else if (strcmp(command, "oopstest") == 0) {
+				oops("User-triggered oops");
 			} else if (index > 0) { // lastchar
 				printf("Invalid command: %s\n", command);
 			}
