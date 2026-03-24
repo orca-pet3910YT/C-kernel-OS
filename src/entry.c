@@ -142,7 +142,9 @@ void kmain(int magic, mbinfo_t *mbi) {
 				"logo: display the logo\n"
 				"ver: display the version\n"
 				"clear: clear the screen\n"
-				"panictest: test the panic functionality\n");
+				"panictest: test the panic functionality\n"
+				"crash: triggers a crash\n"
+				"cpuinfo: get CPU info\n");
 			} else if (strcmp(command, "hello") == 0) {
 				printf("Hello, World!\n");
 			} else if (strcmp(command, "poweroff") == 0) {
@@ -176,7 +178,6 @@ void kmain(int magic, mbinfo_t *mbi) {
 				__asm__ volatile ("cli; ud2");
 			} else if (strcmp(command, "cpuinfo") == 0) {
 				char *vendor = get_cpu_vendor();
-				vendor[12] = '\0'; // req'd
 				printk("CPU vendor: %s", vendor);
 			} else if (index > 0) { // lastchar
 				printf("Invalid command: %s\n", command);
