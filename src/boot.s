@@ -41,9 +41,6 @@ _start:
 	call kmain
 	push $stat_kmain_return
 	call panic
-hang:
-	hlt
-	jmp hang
 
 .section .rodata
 stat_kmain_return:
