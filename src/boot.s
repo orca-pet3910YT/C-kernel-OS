@@ -5,6 +5,9 @@
 .long -(0x1BADB002)
 
 .section .bss
+.globl cpu_vendor
+cpu_vendor:
+.skip 13
 .align 16
 stack_bottom:
 .skip 16384

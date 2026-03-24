@@ -58,6 +58,7 @@ void set_ftimestamp(double timestamp, char* buf) {
 	if (timestamp < 10.0) buf[i++] = ' '; // handle filling the square bracket thingy for our ADHD folks :P
 	if (timestamp < 100.0) buf[i++] = ' ';
 	if (timestamp < 1000.0) buf[i++] = ' ';
+	//if (timestamp > 10000.0) buf[i++] = ' ';
 	char num[20] = {0};
 	ftoa(timestamp, num, 4);
 	for (int j = 0; num[j] != '\0'; j++) {

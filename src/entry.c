@@ -1,18 +1,19 @@
-#include <globals.h>
-#include <vga.h>
-#include <kb.h>
-#include <string.h>
-#include <panic.h>
-#include <stdlib.h>
-#include <serial.h>
-#include <power.h>
-#include <port.h>
-#include <multiboot.h>
-#include <idt.h>
-#include <gdt.h>
-#include <pit.h>
-#include <pic.h>
-#include <generated/__GENVER.h>
+#include <globals.h> // Globals
+#include <vga.h> // Display characters and string
+#include <kb.h> // Keyboard functions (deprecated outside IDT)
+#include <string.h> // String tools
+#include <panic.h> // Critical errors
+#include <stdlib.h> // Number to string functions
+#include <serial.h> // Serial I/O
+#include <power.h> // Power options
+#include <port.h> // Port I/O
+#include <multiboot.h> // Multiboot info for command line
+#include <idt.h> // Interrupt handling
+#include <gdt.h> // Required for IDT
+#include <pit.h> // Programmable Interval Timer
+#include <pic.h> // PIC
+#include <generated/__GENVER.h> // Build info
+#include <cpu.h> // CPU vendor string
 
 char *__split_cmdline(char **buffer) {
 	char *a, *b;
@@ -173,6 +174,10 @@ void kmain(int magic, mbinfo_t *mbi) {
 			} else if (strcmp(command, "crash") == 0) {
 				//__asm__ volatile ("int $0");
 				__asm__ volatile ("cli; ud2");
+			} else if (strcmp(command, "cpuinfo") == 0) {
+				char *vendor = get_cpu_vendor();
+				vendor[12] = '\0'; // req'd
+				printk("CPU vendor: %s", vendor);
 			} else if (index > 0) { // lastchar
 				printf("Invalid command: %s\n", command);
 			}

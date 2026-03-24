@@ -5,7 +5,7 @@
 #include <globals.h>
 
 void init_pit() {
-	pit_set_div(1000);
+	pit_set_div(1429);
 }
 
 void pit_shutdown() {
@@ -26,5 +26,5 @@ void pit_set_div(uint16_t div) {
 
 void pit_tick(regs_t *r) {
 	(void)r;
-	uptime += 0.001;
+	uptime += 0.0007;
 }
