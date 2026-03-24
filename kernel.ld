@@ -9,8 +9,6 @@ SECTIONS
 	{
 		KEEP(*(.multiboot))
 		*(.text*)
-		*(.rodata)
-		*(.data)
 	}
 
 	.rodata ALIGN(4K) :

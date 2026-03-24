@@ -56,7 +56,7 @@ stat_boot_fpu_init:
 .align 4
 .long 8
 .long 15
-.long 70
+.long 2
 .asciz "made by"
 .align 4
 .asciz "orca.pet3910YT"
