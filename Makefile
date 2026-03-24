@@ -58,4 +58,4 @@ qemu-vnc:
 
 cl:
 	@echo -n "lines of code in total: "
-	@grep -R "" src/*.c src/*.s src/*.asm include/*.h Makefile kernel.ld iso/boot/grub/grub.cfg | wc -l
+	@grep -R "" src/*.c src/*.s src/*.asm include/*.h | wc -l
