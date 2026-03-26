@@ -90,7 +90,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 	__asm__ volatile ("sti");
 	printk("Set interrupts");
 	init_pit();
-	printk("Initialized PIT at 1 KHz");
+	printk("Initialized PIT at 1.43 KHz");
 	printk("isr6(): %x", isr6);
 	printk("isr0(): %x", isr0);
 	printk("Hello, World!");
