@@ -11,6 +11,13 @@ The features in this OS are... pretty lacking, but that'll be fixed over time.
 - Be prepared to wait. We'll make sure to respond quickly to PRs and issues.
 - Have fun testing!
 
+## Collaborating
+To collaborate to CkOS, you can use either of these methods:
+- Send git patches to orca.pet.git.patches@gmail.com (no spam please)
+- Make a PR with your update
+
+Both of which require you comply to the rules above.
+
 ## Other projects worth visiting
 
 - [aOS - a bare metal OS from scratch by @axrxvm](https://github.com/axrxvm/aos)
