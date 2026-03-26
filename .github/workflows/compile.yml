@@ -16,6 +16,6 @@ jobs:
     - name: chmod
       run: chmod +x scripts/*.sh
     - name: installpkg
-      run: sudo apt install nasm xorriso clang lld neofetch
+      run: sudo apt install nasm xorriso clang lld
     - name: make
-      run: sh -c "git checkout main; git pull; make cl; make"
+      run: sh -c "make cl; make"
