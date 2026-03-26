@@ -96,6 +96,10 @@ void kmain(int magic, mbinfo_t *mbi) {
 	printk("Initialized PIT at 1.43 KHz");
 	printk("isr6(): %x", isr6);
 	printk("isr0(): %x", isr0);
+	printk("CPU: %s", get_cpu_vendor());
+	// get_cpu_vendor in cpu.asm is a simple assembly function that uses cpuid with eax = 0
+	// which puts the max eax value in eax and the CPU vendor in ebx, edx and ecx in order.
+	// technically i don't think you have to call it more than once but never too safe :P
 	printk("Hello, World!");
 	set_color(0x0F);
 	printf("%s\n", logo); // globals.h:4

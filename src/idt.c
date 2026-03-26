@@ -86,6 +86,10 @@ void init_idt() {
 void isr_handler(regs_t *r) {
 	regs_t altr;
 	memcpy(&altr, r, sizeof(regs_t));
+	extern int regs_available;
+	extern regs_t *regs;
+	regs_available = 1;
+	regs = r;
 	panic("ISR occured! INT %x EIP %x CODE %x", (&altr)->int_n, (&altr)->eip, (&altr)->code);
 }
 

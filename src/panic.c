@@ -2,6 +2,7 @@
 #include <panic.h>
 #include <stddef.h>
 #include <stdarg.h>
+#include <idt.h> // regs_t
 
 // `__panic_` variables. they are defined here to avoid putting them in the stack
 
@@ -23,6 +24,8 @@ const char *msg2; const char *msg3;
 int oopses = 0; // reaching three oopses will cause a panic
 int oopsing = 0;
 int panicking = 0;
+regs_t *regs;
+int regs_available = 0;
 
 void oops(const char *msg, ...) {
 	__asm__ volatile ("cli");
@@ -47,6 +50,9 @@ void oops(const char *msg, ...) {
         cprintk(__oops_buf, params);
         // TODO: stack trace of function addresses + distinguish from regular values
         printk("Oopses triggered: %d", oopses);
+	if (regs_available) {
+		printk("EAX: %x EBX: %x ECX: %x EDX: %x", regs->eax, regs->ebx, regs->ecx, regs->edx);
+	}
         // second header (or the end header)
         while (*__oops__pre && __oops_j < 1023) __oops_buf2[__oops_j++] = *__oops__pre++;
         while (*msg2 && __oops_j < 1023) __oops_buf2[__oops_j++] = *msg2++;
@@ -98,6 +104,9 @@ void panic(const char *msg, ...) {
 	// TODO: stack trace of function addresses + distinguish from regular values
 	printk("---BEGIN Panic info---");
 	if (oopses > 0) printk("Oopses triggered: %d", oopses);
+	if (regs_available) {
+		printk("EAX: %x EBX: %x ECX: %x EDX: %x", regs->eax, regs->ebx, regs->ecx, regs->edx);
+	}
 	printk("--- END Panic info ---");
 	// second header (or the end header)
 	while (*__panic__pre && __panic_j < 1023) __panic_buf2[__panic_j++] = *__panic__pre++;
