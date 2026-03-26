@@ -47,6 +47,8 @@ void parse_cmdline(char *input) {
 	}
 }
 
+extern void _start();
+
 void kmain(int magic, mbinfo_t *mbi) {
 	(void)magic;
 	//volatile char* video = (volatile char*)0xB8000;
@@ -60,6 +62,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 	//puts(string_thing);
 	printk(ver);
 	printk(CKOS_BLD); // build info from scripts/gen_ver.sh
+	printk("Kernel entry offset: %x, image offset: %x", _start, 1024*1024);
 	serial_init();
 	printk("Initialized serial at 0x3F8 (COM1)");
 	printk("Multiboot flags: %x", mbi->flags);
