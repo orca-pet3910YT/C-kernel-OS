@@ -90,7 +90,7 @@ void isr_handler(regs_t *r) {
 	extern regs_t *regs;
 	regs_available = 1;
 	regs = r;
-	panic("ISR occured! INT %x EIP %x CODE %x", (&altr)->int_n, (&altr)->eip, (&altr)->code);
+	oops("ISR occured! INT %x EIP %x CODE %x", (&altr)->int_n, (&altr)->eip, (&altr)->code);
 }
 
 void irq_handler(regs_t *r) {

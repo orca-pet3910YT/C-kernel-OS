@@ -54,6 +54,7 @@ void oops(const char *msg, ...) {
 		printk("EAX: %x EBX: %x ECX: %x EDX: %x", regs->eax, regs->ebx, regs->ecx, regs->edx);
 		printk("At %x:%x accessing %x:%x, EBP: %x, ESP: %x", regs->cs, regs->eip, regs->ds, regs->edi, regs->ebp, regs->esp);
 		printk("EFLAGS: %x", regs->eflags);
+		printk("Code: %x %x %x %x", *(int*)regs->eip, *((int*)(regs->eip)+4), *((int*)(regs->eip)+8), *((int*)(regs->eip)+12));
 	}
         // second header (or the end header)
         while (*__oops__pre && __oops_j < 1023) __oops_buf2[__oops_j++] = *__oops__pre++;
@@ -110,6 +111,7 @@ void panic(const char *msg, ...) {
 		printk("EAX: %x EBX: %x ECX: %x EDX: %x", regs->eax, regs->ebx, regs->ecx, regs->edx);
 		printk("At %x:%x accessing %x:%x, EBP: %x, ESP: %x", regs->cs, regs->eip, regs->ds, regs->edi, regs->ebp, regs->esp);
 		printk("EFLAGS: %x", regs->eflags);
+		printk("Code: %x %x %x %x", *(int*)regs->eip, *((int*)(regs->eip)+4), *((int*)(regs->eip)+8), *((int*)(regs->eip)+12));
 	}
 	printk("--- END Panic info ---");
 	// second header (or the end header)

@@ -34,11 +34,6 @@ common_isr:
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
-	;pop eax
-	;mov ds, ax
-	;mov es, ax
-	;mov fs, ax
-	;mov gs, ax
 	popa
 	add esp, 8
 	; generally, don't reenable interrupts. they might cause more problems if the faulty instruction
