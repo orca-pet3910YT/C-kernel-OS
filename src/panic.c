@@ -52,6 +52,8 @@ void oops(const char *msg, ...) {
         printk("Oopses triggered: %d", oopses);
 	if (regs_available) {
 		printk("EAX: %x EBX: %x ECX: %x EDX: %x", regs->eax, regs->ebx, regs->ecx, regs->edx);
+		printk("At %x:%x accessing %x:%x, EBP: %x, ESP: %x", regs->cs, regs->eip, regs->ds, regs->edi, regs->ebp, regs->esp);
+		printk("EFLAGS: %x", regs->eflags);
 	}
         // second header (or the end header)
         while (*__oops__pre && __oops_j < 1023) __oops_buf2[__oops_j++] = *__oops__pre++;
@@ -88,7 +90,7 @@ void panic(const char *msg, ...) {
 	printk("]---");*/
 	if (panicking) {
 		printk("**** DOUBLE PANIC - SYSTEM HALTED ****");
-		__asm__ volatile ("hlt");
+		__asm__ volatile ("cli; hlt");
 	}
 	panicking = 1;
 	va_list params;
@@ -106,6 +108,8 @@ void panic(const char *msg, ...) {
 	if (oopses > 0) printk("Oopses triggered: %d", oopses);
 	if (regs_available) {
 		printk("EAX: %x EBX: %x ECX: %x EDX: %x", regs->eax, regs->ebx, regs->ecx, regs->edx);
+		printk("At %x:%x accessing %x:%x, EBP: %x, ESP: %x", regs->cs, regs->eip, regs->ds, regs->edi, regs->ebp, regs->esp);
+		printk("EFLAGS: %x", regs->eflags);
 	}
 	printk("--- END Panic info ---");
 	// second header (or the end header)
