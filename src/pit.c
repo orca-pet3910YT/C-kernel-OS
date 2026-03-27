@@ -27,4 +27,5 @@ void pit_set_div(uint16_t div) {
 void pit_tick(regs_t *r) {
 	(void)r;
 	uptime += 0.0007;
+	uptime_ticks++;
 }

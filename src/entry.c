@@ -14,6 +14,7 @@
 #include <pic.h> // PIC
 #include <generated/__GENVER.h> // Build info
 #include <cpu.h> // CPU vendor string
+#include <generated/__BLD.h> // Build number
 
 char *__split_cmdline(char **buffer) {
 	char *a, *b;
@@ -48,6 +49,11 @@ void parse_cmdline(char *input) {
 }
 
 extern void _start();
+void debug_info_print() {
+	printk(ver); printk("Build #%d by %s", BUILD_NUMBER, CKOS_BLD);
+	printk("Kernel entry offset: %x, image offset: %x", _start, 1024*1024);
+	printk("Made by orca.pet3910YT with %s", "\x03");
+}
 
 void kmain(int magic, mbinfo_t *mbi) {
 	(void)magic;
@@ -60,9 +66,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 	//char string_thing[12] = {0};
 	//ftoa(0.25, string_thing);
 	//puts(string_thing);
-	printk(ver);
-	printk(CKOS_BLD); // build info from scripts/gen_ver.sh
-	printk("Kernel entry offset: %x, image offset: %x", _start, 1024*1024);
+	debug_info_print();
 	serial_init();
 	printk("Initialized serial at 0x3F8 (COM1)");
 	printk("Multiboot flags: %x", mbi->flags);

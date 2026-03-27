@@ -21,6 +21,10 @@ build:
 	@scripts/check_dirs.sh
 	@echo "Running scripts/gen_ver.sh"
 	@scripts/gen_ver.sh
+	@echo "Running scripts/build_inc.sh"
+	@scripts/build_inc.sh
+	@echo "Running scripts/gen_ver_ex.sh"
+	@scripts/gen_ver_ex.sh
 
 build/%.o: src/%.c | build
 	@echo "Compiling $<"
@@ -46,7 +50,7 @@ build/boot.iso: build/bootImage.elf
 
 clean:
 	@echo "Cleaning..."
-	@rm -rf build iso/bootImage.elf include/generated
+	@rm -rf build iso/bootImage.elf include/generated/*.h
 
 qemu:
 	@echo "Running in QEMU"
@@ -59,3 +63,7 @@ qemu-vnc:
 cl:
 	@echo -n "lines of code in total: "
 	@grep -R "" src/*.c src/*.s src/*.asm include/*.h | wc -l
+
+mrproper:
+	@echo "Erasing all data!"
+	@rm -rf build iso/bootImage.elf include/generated/*.h .version

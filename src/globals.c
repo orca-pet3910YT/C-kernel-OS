@@ -1,5 +1,6 @@
 #include <globals.h>
 #include <stdlib.h>
+#include <stdint.h>
 double uptime = 0.0;
 const char *ver = "CkOS Beta Version 0.02 for i386 (x86-32) at 10th March 2026";
 const char *logo =
@@ -15,3 +16,4 @@ char serial_in = false; // true and false is defined in stdlib.h. while this is 
 char serial_out = false;
 volatile char kbc = 0;
 // i'm sorry fellow C developers for this shitty solution but i just have to do this
+uint64_t uptime_ticks = 0;
