@@ -186,7 +186,7 @@ void kmain(int magic, mbinfo_t *mbi) {
 				printf(credits);
 			} else if (strcmp(command, "crash") == 0) {
 				//__asm__ volatile ("int $0");
-				__asm__ volatile ("cli; ud2");
+				__asm__ volatile ("int3");
 			} else if (strcmp(command, "cpuinfo") == 0) {
 				char *vendor = get_cpu_vendor();
 				printk("CPU vendor: %s", vendor);
