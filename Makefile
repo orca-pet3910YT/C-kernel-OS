@@ -1,5 +1,5 @@
 CCFLAGS = -target i386-elf -fno-pie -fno-pic -Wunused -Wall -Wextra
-CCFLAGSC = -ffreestanding -target i386-elf -fno-exceptions -fno-stack-protector -fno-pie -fno-pic -fno-unwind-tables -fno-asynchronous-unwind-tables -I include -nostdlib -Wall -Wextra -fno-ident -Wunused
+CCFLAGSC = -ffreestanding -target i386-elf -fno-exceptions -fno-stack-protector -fno-align-functions -fno-pie -fno-pic -fno-unwind-tables -fno-asynchronous-unwind-tables -I include -nostdlib -Wall -Wextra -fno-ident -Wunused
 SRC_C := $(wildcard src/*.c)
 SRC_S := $(wildcard src/*.s)
 SRC_ASM := $(wildcard src/*.asm)
