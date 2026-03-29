@@ -104,6 +104,8 @@ void kmain(int magic, mbinfo_t *mbi) {
 	// get_cpu_vendor in cpu.asm is a simple assembly function that uses cpuid with eax = 0
 	// which puts the max eax value in eax and the CPU vendor in ebx, edx and ecx in order.
 	// technically i don't think you have to call it more than once but never too safe :P
+	char brand[13];
+	printk("---> %s", get_cpu_brand(brand));
 	printk("Hello, World!");
 	set_color(0x0F);
 	printf("%s\n", logo); // globals.h:4

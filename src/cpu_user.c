@@ -1,5 +1,6 @@
 #include <cpu.h>
 #include <string.h>
+#include <cpuid.h> // first ever header outside CkOS to be included!
 
 char *get_cpu_vendor_user() {
 	char *vendor = get_cpu_vendor();
@@ -41,4 +42,16 @@ char *get_cpu_vendor_user() {
 		return "AMD K5 (early)";
 	}
 	return "Unknown";
+}
+
+char *get_cpu_brand(char buffer[]) {
+	unsigned int r[12];
+	__cpuid(0x80000000, r[0], r[1], r[2], r[3]);
+	if (r[0] < 0x80000004) return "Unknown";
+	__cpuid(0x80000002, r[0], r[1], r[2], r[3]);
+	__cpuid(0x80000003, r[4], r[5], r[6], r[7]);
+	__cpuid(0x80000004, r[8], r[9], r[10], r[11]);
+	memcpy(buffer, r, sizeof(r));
+	buffer[sizeof(r)] = '\0';
+	return buffer;
 }
