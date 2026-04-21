@@ -30,3 +30,7 @@ Both of which require you comply to the rules above.
 - [aOS - a bare metal OS from scratch by @axrxvm](https://github.com/axrxvm/aos)
 - [CedarOS - another bare metal OS with a custom bootloader by @CedarDude](https://github.com/CedarDude/Cedar-OS)
 - [kernel-OS - my previous attempt at an assembly kernel](https://github.com/orca-pet3910YT/kernel-OS)
+
+## Links
+
+[![Hypercommit](https://img.shields.io/badge/Hypercommit-DB2475)](https://hypercommit.com/c-kernel-os)
