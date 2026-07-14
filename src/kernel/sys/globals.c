@@ -1,6 +1,7 @@
 #include <sys/globals.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include <generated/config.h>
 double uptime = 0.0;
 //const char *ver = "CkOS Beta Version 0.03 for i386 (x86-32) at 2nd April 2026";
@@ -19,7 +20,9 @@ const char *credits =
 "Credits:\n"
 "        axrxvm: numerous helpful resources about aOS\n"
 "      oslayout: gave me a copy of PotatoOS for studying\n"
-"           you: for usage of this experimental OS\n";
+"           you: for usage of this experimental OS\n"
+"      orca-pet3910YT: creator\n"
+"      JM-Pilot: contributor\n";
 char serial_in = false; // true and false is defined in stdlib.h. while this is not the C standard, it makes you have to import less headers.
 char serial_out = false;
 char serial_com1 = true;
