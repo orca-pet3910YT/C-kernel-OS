@@ -217,9 +217,9 @@ void shell_cmd_loop(void)
 void print_term_license(void)
 {
 	printf("C-Kernel-OS Copyright (C) 2026 orca-pet3910YT\n");
-    printf("This program comes with ABSOLUTELY NO WARRANTY; for details type 'wlicense'.\n");
-    printf("This is free software, and you are welcome to redistribute it\n");
-    printf("under certain conditions; type 'dlicense' for details.\n\n");
+    	printf("This program comes with ABSOLUTELY NO WARRANTY; for details type 'wlicense'.\n");
+    	printf("This is free software, and you are welcome to redistribute it\n");
+    	printf("under certain conditions; type 'dlicense' for details.\n\n");
 }
 
 void print_term_warranty(void)
@@ -245,5 +245,6 @@ void print_term_distrib(void)
     	"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
     	"GNU General Public License for more details.\n"
     	"You should have received a copy of the GNU General Public License\n"
-    	"along with this program.  If not, see <https://www.gnu.org/licenses/>.\n");
+   	"along with this program.  If not, see <https://www.gnu.org/licenses/>.\n");
 }
+
