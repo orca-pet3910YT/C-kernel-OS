@@ -73,9 +73,9 @@ void shell_cmd_loop(void)
 		print_term_license();
 		printf("Available Commands\n"
 		        "hello    -- greet the world!\n"
-			"poweroff -- shutdown the pc (QEMU ONLY)\n"
-			"reboot   -- reboot the pc (QEMU ONLY)\n"
-			"halt     -- halts the pc (non recoverable)\n"
+			"poweroff -- shutdown the PC (hypervisor only)\n"
+			"reboot   -- reboot the pc\n"
+			"halt     -- halts the pc (non-recoverable)\n"
 			"echo     -- echoes the string you typed\n"
 			"credits  -- show credits\n"
 			"help     -- show this menu\n"
@@ -84,7 +84,7 @@ void shell_cmd_loop(void)
 			"logo     -- prints the logo\n"
 			"uptime   -- shows the uptime\n"
 			"beep     -- makes the speaker go beep\n"
-			"square   -- draws 2 square\n"
+			"square   -- draws 2 squares\n"
 			"setcan   -- sets canonical_md to true\n"
 			"setncan  -- sets canonical_md to false\n"
 		);
@@ -108,13 +108,13 @@ void shell_cmd_loop(void)
 	/* poweroff */
 	else if (strcmp(cmd_buffer, "poweroff") == 0) {
 		poweroff();
-		panic("FAILED TO REBOOT");
+		panic("Failed to power off; likely not a hypervisor");
 	}
 
 	/* reboot */
 	else if (strcmp(cmd_buffer, "reboot") == 0) {
 		reboot();
-		panic("FAILED TO REBOOT");
+		panic("Failed to reboot");
 	}
 
 	/* halt */
@@ -134,7 +134,7 @@ void shell_cmd_loop(void)
 
 	/* panic */
 	else if (strcmp(cmd_buffer, "panic") == 0) {
-		panic("PANIC TEST :^)");
+		panic("Manually triggered panic");
 	}
 
 	/* echo */
@@ -206,7 +206,7 @@ void shell_cmd_loop(void)
 	}
 
 	else {
-		printf("Invalid command, type help to show the right commands\n");
+		printf("Invalid command, type help to show available commands\n");
 	}
 }
 
@@ -217,9 +217,9 @@ void shell_cmd_loop(void)
 void print_term_license(void)
 {
 	printf("C-Kernel-OS Copyright (C) 2026 orca-pet3910YT\n");
-    	printf("This program comes with ABSOLUTELY NO WARRANTY; for details type 'wlicense'.\n");
-    	printf("This is free software, and you are welcome to redistribute it\n");
-    	printf("under certain conditions; type 'dlicense' for details.\n\n");
+    printf("This program comes with ABSOLUTELY NO WARRANTY; for details type 'wlicense'.\n");
+    printf("This is free software, and you are welcome to redistribute it\n");
+    printf("under certain conditions; type 'dlicense' for details.\n\n");
 }
 
 void print_term_warranty(void)
