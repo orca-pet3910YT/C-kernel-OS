@@ -13,6 +13,7 @@ extern char serial_out;
 extern char serial_com1;
 extern char serial_com2;
 extern volatile char kbc;
+extern const char *credits;
 extern volatile uint64_t uptime_ticks;
 extern unsigned char loglevel;
 extern char font_initialized;

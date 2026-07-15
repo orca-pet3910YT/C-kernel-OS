@@ -97,41 +97,6 @@ struct cpufreq_s *cpufreq;
 char *no_fb_err = "A framebuffer is required to continue. If you have serial, boot logs will go there.";
 char command[256] = {0};
 
-/* it is in the license where it says
-  If the program does terminal interaction, make it output a short
-  notice like this when it starts in an interactive mode
- */
-void print_term_license(void) {
-	printf("C Kernel OS Copyright (C) 2026 orca-pet3910YT\n");
-    	printf("This program comes with ABSOLUTELY NO WARRANTY; for details type 'wlicense'.\n");
-    	printf("This is free software, and you are welcome to redistribute it\n");
-    	printf("under certain conditions; type 'dlicense' for details.\n\n");
-}
-
-void print_term_warranty(void) {
-	printf("\tTHERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY\n"
-	"APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT\n"
-	"HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM \"AS IS\" WITHOUT WARRANTY\n"
-	"OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO,\n"
-	"THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\n"
-	"PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM\n"
-	"IS WITH YOU.  SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF\n"
-	"ALL NECESSARY SERVICING, REPAIR OR CORRECTION.\n");
-}
-
-void print_term_distrib(void) {
-	printf("	This program is free software: you can redistribute it and/or modify\n"
-    	"it under the terms of the GNU General Public License as published by\n"
-    	"the Free Software Foundation, either version 3 of the License, or\n"
-    	"(at your option) any later version.\n"
-    	"This program is distributed in the hope that it will be useful,\n"
-    	"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-    	"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-    	"GNU General Public License for more details.\n"
-    	"You should have received a copy of the GNU General Public License\n"
-    	"along with this program.  If not, see <https://www.gnu.org/licenses/>.\n");
-}
-
 void _Noreturn kmain(int magic, uint32_t *mbi) {
 	(void)magic;
 	//volatile char* video = (volatile char*)0xB8000;
