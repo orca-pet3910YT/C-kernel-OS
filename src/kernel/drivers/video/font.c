@@ -49,10 +49,15 @@ void _putc(unsigned char c, int x, int y, uint32_t fg, uint32_t bg) {
 	uint8_t *glyph = (uint8_t*)_binary_bin_default_8x16_psf_start+4+(c*font_head->char_size);
 	for (int r = 0; r < font_head->char_size; r++) {
 		uint32_t *row = framebuffer_info->fb+(y+r)*pitchp;
-		for (int s = 0; s < 8; s++) {
-			int p = (glyph[r] >> (7-s)) & 1;
-			row[x+s] = p ? fg : bg;
-		}
+		uint8_t bits = glyph[r];
+		row[x] = (bits & 0x80) ? fg : bg;
+		row[x+1] = (bits & 0x40) ? fg : bg;
+		row[x+2] = (bits & 0x20) ? fg : bg;
+		row[x+3] = (bits & 0x10) ? fg : bg;
+		row[x+4] = (bits & 0x08) ? fg : bg;
+		row[x+5] = (bits & 0x04) ? fg : bg;
+		row[x+6] = (bits & 0x02) ? fg : bg;
+		row[x+7] = (bits & 0x01) ? fg : bg;
 	}
 }
 
@@ -73,19 +78,22 @@ void clear_screen() {
 	memset(framebuffer_info->fb, 0x00, framebuffer_info->h*framebuffer_info->pitch);
 	for (int x = 0; x < t_width; x++) {
 		for (int y = 0; y < t_height; y++) {
-			terminal[y*t_width+x].c = 0x20;
-			terminal[y*t_width+x].fg = fg_color;
-			terminal[y*t_width+x].bg = bg_color;
+			int offset = y*t_width+x;
+			terminal[offset].c = 0x20;
+			terminal[offset].fg = fg_color;
+			terminal[offset].bg = bg_color;
 		}
 	}
 	redraw_term(); tx = 0; ty = 0;
 }
 
-void flush_term() {
+__attribute__((target("sse2"))) void flush_term() {
 	for (int y = 0; y < t_height; y++) {
+		term_cell_t *c = &terminal[y*t_width];
 		for (int x = 0; x < t_width; x++) {
-			term_cell_t *c = &terminal[y*t_width+x];
-			if (!c->dirty) continue;
+			if (!c->dirty) {
+				c++; continue;
+			}
 #if CONFIG_GLOGO
 			if (x < logo_start_x || (x > logo_start_x && y > logo_start_y)) {
 				_putc(c->c, x*T_CHAR_WIDTH, y*T_CHAR_HEIGHT, c->fg, c->bg);
@@ -95,18 +103,24 @@ void flush_term() {
 			_putc(c->c, x*T_CHAR_WIDTH, y*T_CHAR_HEIGHT, c->fg, c->bg);
 			c->dirty = 0;
 #endif
+			c++;
 		}
 	}
 }
 
-void scroll_term() {
-	memmove(terminal, terminal+ t_width, sizeof(term_cell_t)*t_width*(t_height-1));
+__attribute__((target("sse2"))) void scroll_term() {
+	drv_dbg[0] = uptime_ticks;
+	term_cell_t *term = terminal;
+	memmove(term, term+t_width, sizeof(term_cell_t)*t_width*(t_height-1));
+	drv_dbg[1] = uptime_ticks;
+	term_cell_t *clear_cell = &terminal[(t_height-1)*t_width];
 	for (int x = 0; x < t_width; x++) {
-		term_cell_t *c = &terminal[(t_height-1)*t_width+x];
-		c->c = ' '; c->fg = fg_color; c->bg = bg_color;
+		clear_cell->c = ' '; clear_cell->fg = fg_color; (clear_cell++)->bg = bg_color;
 	}
-	for (int i = 0; i < t_width*t_height; i++) terminal[i].dirty = 1;
+	drv_dbg[2] = uptime_ticks;
+	for (int i = t_width; i < t_width*t_height; i++) terminal[i].dirty = 1;
 	ty = t_height - 1; tx = 0;
+	drv_dbg[3] = uptime_ticks;
 }
 
 void put_char(char c) {
@@ -117,10 +131,11 @@ void put_char(char c) {
 	}
 	if (c == '\b' && tx > 0) {
 		tx--;
-		terminal[ty*t_width+tx].fg = fg_color;
-		terminal[ty*t_width+tx].bg = bg_color;
-		terminal[ty*t_width+tx].dirty = terminal[ty*t_width+tx].c == ' ' ? 0 : 1;
-		terminal[ty*t_width+tx].c = ' ';
+		int offset = ty*t_width+tx;
+		terminal[offset].fg = fg_color;
+		terminal[offset].bg = bg_color;
+		terminal[offset].dirty = terminal[ty*t_width+tx].c == ' ' ? 0 : 1;
+		terminal[offset].c = ' ';
 		return;
 	}
 	if (c == '\t') {

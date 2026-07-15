@@ -4,7 +4,6 @@
 #include <string.h> // String tools
 #include <sys/panic.h> // Critical errors
 #include <stdlib.h> // Number to string functions
-#include <stdbool.h>
 #include <drivers/uart/serial.h> // Serial I/O
 #include <drivers/power/power.h> // Power options
 #include <arch/i386/port.h> // Port I/O
@@ -272,6 +271,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 #endif
 	printk(0, "Welcome to CkOS!");
 	set_post(0x00);
+	kernel_boot_ticks = uptime_ticks;
 	//panic("This PC is ass."); // compile with this uncommented to prank people :)
 	printf("Running shell\n");
 
@@ -285,6 +285,178 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	while (1) {
 		shell_cmd_loop();
 		/* do stuff */
+
+	/* we would clear this because sometimes the cursor is at the very bottom and it is annoying */
+	clear_screen(); // comment this line if you dont want to clear
+	
+	printf("CkOS kernel shell, type 'help' for more info\n");
+	int index = 0;
+	printf("$ ");
+	for (;;) {
+		char c = kbc; // from globals
+		__asm__ volatile ("pause");
+		if (c) { if (c != '\b') { putc(c); } kbc = 0; } else { __asm__ volatile ("hlt"); continue; }
+		if (c == '\b') {
+			if (index > 0) {
+				index--;
+				command[index] = '\0';
+				putc('\b');
+			}
+			flush_term();
+			//lastchar--;
+			continue;
+		}
+		if (c == 0x1A || c == 0x1B || c == 0x1E || c == 0x1F) { // all of these are arrow keys
+			continue; // arrow handling is painful in our world
+		}
+		if (c != '\n' && index < 256) {
+			command[index++] = c;
+			command[index] = '\0';
+		}
+		flush_term();
+		if (c == '\n') {
+			if (strncmp(command, "help", 4) == 0) {
+				print_term_license();
+				printf("The commands are:\n"
+				"hello: say hello to the world\n"
+				"poweroff: turn the system off (QEMU only)\n"
+				"reboot: restart the system\n"
+				"halt: halt the CPU putting the entire system to a freeze\n"
+				"help: display this message\n"
+				"logo: display the logo\n"
+				"ver: display the version\n"
+				"clear: clear the screen\n"
+				"panictest: test the panic functionality\n"
+				"crash: triggers a crash\n"
+				"cpuinfo: get CPU info\n"
+				"delaytest: test delay functions\n"
+				"fb_demo: framebuffer demo\n"
+				"uptime: get OS uptime\n"
+				"echo: output a string\n"
+				"beep: make a 250 ms 440 Hz beep\n");
+			} else if (strncmp(command, "hello", 5) == 0) {
+				printf("Hello, World!\n");
+			} else if (strncmp(command, "poweroff", 8) == 0) {
+				poweroff();
+				panic("Failed to power off; likely not a QEMU machine");
+			} else if (strncmp(command, "reboot", 6) == 0) {
+				printf("Hello, World!");
+				reboot();
+				__asm__ volatile ("cli; hlt");
+				panic("Failed to reboot; unknown error");
+			} else if (strncmp(command, "halt", 4) == 0) {
+				printf("System halted. It is now safe to power off.\n");
+				while (1) halt();
+			} else if (strncmp(command, "logo", 4) == 0) {
+				set_color(0x00000000, 0x00FFFFFF);
+				printf("%s\n", logo);
+				set_color(0x00000000, 0x00AAAAAA);
+			} else if (strncmp(command, "ver", 3) == 0) {
+				printf("%s\n", ver);
+			} else if (strncmp(command, "panictest", 9) == 0) {
+				panic("User-triggered panic");
+			} else if (strncmp(command, "clear", 5) == 0) {
+				clear_screen();
+			} else if (strncmp(command, "crash", 5) == 0) {
+				__asm__ volatile ("int3");
+			} else if (strncmp(command, "cpuinfo", 7) == 0) {
+				get_cpu_brand(brand);
+				printf("CPU vendor: '%s', friendly name '%s'\n", get_cpu_vendor(), get_cpu_vendor_user());
+				printf("CPU brand: '%s'\n", brand);
+				struct cpufreq_s _temp = get_cpu_clk();
+				*cpufreq = _temp;
+				printf("CPU clock speeds (CPUID EAX=16h):\nBase: %d MHz, max: %d MHz, Bus: %d MHz\n", cpufreq->base, cpufreq->max, cpufreq->bus);
+				// FIXME
+				//unsigned int clk_d = get_cpu_clk_d();
+				//printf("TSC-based clock speed: %d\n", clk_d);
+			} else if (strncmp(command, "oopstest", 8) == 0) {
+				oops("User-triggered oops");
+			} else if (strncmp(command, "reboot", 6) == 0) {
+				reboot();
+				__asm__ volatile ("cli; hlt");
+				panic("Failed to reboot; unknown error");
+			} else if (strncmp(command, "delaytest", 9) == 0) {
+				uint32_t ms_elapsed[3] = {0};
+				uint32_t time = uptime_ticks/10;
+				delay(500);
+				ms_elapsed[0] = uptime_ticks/10-time;
+				time = uptime_ticks/10;
+				delay(1000);
+				ms_elapsed[1] = uptime_ticks/10-time;
+				time = uptime_ticks/10;
+				delay(5000);
+				ms_elapsed[2] = uptime_ticks/10-time;
+				printf("done, all tests passed!\n");
+				printf("test 0 (500 ms): %d\ntest 1 (1 sec): %d\ntest 2 (5 sec): %d\n", ms_elapsed[0], ms_elapsed[1], ms_elapsed[2]);
+			} else if (strncmp(command, "fb_demo", 7) == 0) {
+#ifdef CONFIG_ANIMATIONS
+#if CONFIG_ANIMATIONS
+				if (!command[8]) printf("Please pick a demo by passing a digit as a command argument. Available demos: 0, 1, 2\n");
+				else if (command[8] == '0') fb_demo_2(fb_info);
+				else if (command[8] == '1') fb_demo_3(fb_info);
+				else if (command[8] == '2') fb_demo_4(fb_info);
+				else printf("Invalid demo\n");
+#else
+				printf("Animations are disabled, please recompile if that's a mistake\n");
+#endif
+#endif /* CONFIG_ANIMATIONS */
+			} else if (strncmp(command, "echo", 4) == 0) {
+				puts(command+5);
+				putc('\n');
+			} else if (strncmp(command, "uptime", 6) == 0) {
+				uint32_t uptime_secs = (uint32_t)(uptime_ticks)/10000; // src/pit.c
+				printf("Uptime in seconds: %d\n", uptime_secs);
+				uint32_t uptime_minutes = uptime_secs/60;
+				uint32_t uptime_hours = uptime_minutes/60;
+				uint32_t uptime_days = uptime_hours/24;
+				uint32_t uptime_years = uptime_days/365;
+				if (uptime_years == 1) {
+					printf("1 year, ");
+				} else if (uptime_years > 1) {
+					printf("%d years, ", uptime_years);
+				}
+				if (uptime_days == 1) {
+					printf("1 day, ");
+				} else if (uptime_days > 1) {
+					printf("%d days, ", uptime_days % 365);
+				}
+				if (uptime_hours == 1) {
+					printf("1 hour, ");
+				} else if (uptime_hours > 1) {
+					printf("%d hours, ", uptime_hours % 24);
+				}
+				if (uptime_minutes == 1) {
+					printf("1 minute and ");
+				} else if (uptime_minutes > 1) {
+					printf("%d minutes and ", uptime_minutes % 60);
+				}
+				printf("%d seconds\n", uptime_secs % 60);
+			} else if (strncmp(command, "beep", 4) == 0) {
+				set_pcspkr_frequency(440);
+				delay(250);
+				no_pcspkr();
+			} else if (strncmp(command, "square", 6) == 0) {
+				clear_screen();
+				draw_rect(150, 150, 150, 150, 0x00FFFFFF);
+				delay(3000);
+				clear_screen();
+				draw_rect_outline(100, 100, 125, 125, 0x00FFFFFF, 5);
+				delay(3000);
+				clear_screen();
+			} else if (strncmp(command, "wlicense", 9) == 0) {
+				print_term_warranty();
+			} else if (strncmp(command, "dlicense", 9) == 0) {
+				print_term_distrib();
+			} else if (index > 0) {
+				printf("Invalid command: %s\n", command);
+			}
+			index = 0;
+			for (uint32_t i = 0; i < 256; i++) {
+				command[i] = '\0';
+			}
+			printf("$ ");
+			continue;
+		}
 	}
 	printk(4, "Halting because we have nothing to do.");
 	halt();

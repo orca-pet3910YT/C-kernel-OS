@@ -5,7 +5,6 @@
 extern double uptime;
 extern const char *ver;
 extern const char *logo;
-extern const char *credits;
 extern const char *compiler;
 extern const int compiler_ver[3];
 extern const int c_version;
@@ -21,6 +20,8 @@ extern int tx;
 extern int ty;
 extern uint32_t fg_color;
 extern uint32_t bg_color;
+extern uint64_t kernel_boot_ticks;
+extern uint32_t drv_dbg[8];
 
 // Print levels
 #define PR_EMERG 0

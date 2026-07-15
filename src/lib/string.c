@@ -53,6 +53,21 @@ void *memset(void *to, int what, unsigned int count) {
 	return to;
 }
 
+void *memmove(void *to, const void *from, size_t size) {
+	char *d; const char *s;
+	if (to <= from) {
+		d = to; s = from;
+		while (size--) *d++ = *s++;
+	} else {
+		d = to;
+		d += size;
+		s = from;
+		d += size;
+		while (size--) *--d = *--s;
+	}
+	return to;
+}
+
 /*void *memmove(void *to, const void *from, size_t size) {
 	unsigned char *dest = (unsigned char*)to;
 	const unsigned char *src = (const unsigned char *)from;
@@ -96,11 +111,11 @@ void *memset(void *to, int what, unsigned int count) {
 	return to;
 }*/
 
-void *memcpy(void *restrict to, const void *restrict from, size_t size) {
-	unsigned char *dest = (unsigned char*)to;
-	const unsigned char *src = (const unsigned char*)from;
-	for (size_t i = 0; i < size; i++) dest[i] = src[i];
-	return to;
+__attribute__((target("sse2"))) void *memcpy(void *dest, const void *src, size_t count) {
+	char *d = dest;
+	const char *s = src;
+	while (count--) *d++ = *s++;
+	return dest;
 }
 
 int memcmp(const void *a, const void *b, size_t size) {

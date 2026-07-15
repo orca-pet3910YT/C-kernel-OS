@@ -1,5 +1,6 @@
-.globl memmove
-memmove:
+#.globl memmove
+# deprecated
+memmove_old:
 	# preserve stack frame and modified string pointers
 	push %ebp
 	mov %esp, %ebp

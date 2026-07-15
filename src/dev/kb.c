@@ -6,6 +6,7 @@
 #include <arch/i386/port.h>
 #include <drivers/input/kb.h>
 #include <drivers/uart/serial.h>
+#include <drivers/power/power.h>
 #include <stddef.h>
 #include <sys/globals.h>
 #include <generated/config.h>
@@ -101,6 +102,10 @@ char scancode_to_c(uint8_t sc) {
 		if (sc == SCANCODE_DOWN) return 0x1F;
 		if (sc == SCANCODE_LEFT) return 0x1A;
 		if (sc == SCANCODE_RIGHT) return 0x1B;
+		if (sc == 0x53) { // delete
+			if (ctrl && alt) reboot();
+			return 0x7F;
+		}
 		if (sc & 0x80) return 0;
 		return 0;
 	}

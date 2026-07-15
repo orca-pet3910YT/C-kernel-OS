@@ -53,3 +53,7 @@ uint32_t bg_color = CONFIG_COLOR_FB_BG;
 #else
 uint32_t bg_color = 0x00000000;
 #endif
+
+uint32_t drv_dbg[8];
+
+uint64_t kernel_boot_ticks = 0;
