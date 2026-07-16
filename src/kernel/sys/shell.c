@@ -23,7 +23,7 @@ static char cmd_buffer[BUFFER_WIDTH];
 
 void shell_init(void)
 {
-	clear_screen(); // comment this line if you dont want to clear
+	//clear_screen(); // comment this line if you dont want to clear
 	printf("CkOS Kernel Shell, type 'help' for more info\n");
 }
 
@@ -35,12 +35,17 @@ void shell_cmd_loop(void)
 	int cmdb_ptr = 0;
 	/* get output first*/
 	while (true) {
-		while (kbc == 0);
+		while (!kbc) __asm__ volatile ("pause"); // the asm is for reducing CPU load during the loop
 		c = kbc;
 		kbc = 0; 
 		if (c == '\n') {
 			/* null end it */
 			cmd_buffer[cmdb_ptr] = '\0';
+			if (!strlen(cmd_buffer)) {
+				printf("\n$ ");
+				cmdb_ptr = 0;
+				continue;
+			}
 			break;
 		}
 		/* skip so we cannot access the random data */
@@ -59,7 +64,7 @@ void shell_cmd_loop(void)
 		if (cmdb_ptr < (int)sizeof(cmd_buffer) - 1) {
 			cmd_buffer[cmdb_ptr++] = c;
 		} else {
-			printf("TO MUCH CHARACTERS\n");
+			printf("Too many characters\n");
 		}
 	}
 	/* do canonical */
@@ -74,8 +79,8 @@ void shell_cmd_loop(void)
 		printf("Available Commands\n"
 		        "hello    -- greet the world!\n"
 			"poweroff -- shutdown the PC (hypervisor only)\n"
-			"reboot   -- reboot the pc\n"
-			"halt     -- halts the pc (non-recoverable)\n"
+			"reboot   -- reboot the PC\n"
+			"halt     -- halts the PC (non-recoverable)\n"
 			"echo     -- echoes the string you typed\n"
 			"credits  -- show credits\n"
 			"help     -- show this menu\n"

@@ -118,7 +118,7 @@ __attribute__((target("sse2"))) void scroll_term() {
 		clear_cell->c = ' '; clear_cell->fg = fg_color; (clear_cell++)->bg = bg_color;
 	}
 	drv_dbg[2] = uptime_ticks;
-	for (int i = t_width; i < t_width*t_height; i++) terminal[i].dirty = 1;
+	for (int i = 0; i < t_width*t_height; i++) terminal[i].dirty = 1;
 	ty = t_height - 1; tx = 0;
 	drv_dbg[3] = uptime_ticks;
 }
