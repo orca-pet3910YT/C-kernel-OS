@@ -10,7 +10,7 @@ typedef struct file {
 	uint32_t offset; // reserved for seeking
 	void *data;
 	uint32_t size;
-	char *name;
+	char name[256];
 } file_t;
 typedef struct filesystem {
 	file_t(*read)(file_t*);

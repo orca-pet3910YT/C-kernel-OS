@@ -47,6 +47,13 @@ char *strcpy(char *to, const char *from) {
 	return to;
 }
 
+char *strncpy(char *to, const char *from, size_t count) {
+	size_t i = 0;
+	for (i = 0; i < count && from[i]; i++) to[i] = from[i];
+	for (; i < count; i++) to[i] = 0;
+	return to;
+}
+
 void *memset(void *to, int what, unsigned int count) {
 	unsigned char *p = (unsigned char *)to;
 	while (count--) *p++ = (unsigned char)what;

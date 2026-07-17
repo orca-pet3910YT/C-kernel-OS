@@ -29,7 +29,7 @@ char *resolve_path(char *path, char *cwd) {
 int register_fs(filesystem_t *fs) {
 	int free_fs_index = 0;
 	if (fs->unmount && fs->mount && fs->write && fs->read) { // validate filesystem object
-		for (; free_fs_index < MAX_FS; free_fs_index++);
+		for (; free_fs_index < MAX_FS; free_fs_index++) if (!filesystems[free_fs_index].read) break;
 		if (free_fs_index == MAX_FS-1) {
 			printk(4, "vfs: error: out of filesystem spots to register. (-%d)", EUNAVAIL);
 			return -EUNAVAIL;
@@ -108,10 +108,20 @@ file_t read(char *path, uint32_t size) {
 	file_obj.offset = 0;
 	for (int i = 0; i < mount_count; i++) {
 		if (mounts[i].fs->read) {
-			char *filepath = path;
-			filepath += strlen(mounts[i].path);
-			if (*filepath != '/') filepath = strcat(root_str, filepath);
-			file_obj.name = filepath;
+			if (strncmp(path, mounts[i].path, strlen(mounts[i].path)) != 0) continue;
+			//char *filepath = path;
+			//filepath += strlen(mounts[i].path);
+			//if (*filepath != '/') filepath = strcat(root_str, filepath);
+			//file_obj.name = filepath;
+			char filepath[256];
+			strcpy(filepath, path+strlen(mounts[i].path));
+			if (*filepath != '/') {
+				char tmp[256] = "/";
+				strcat(tmp, filepath);
+				strcpy(filepath, tmp);
+			}
+			strncpy(file_obj.name, filepath, sizeof(file_obj.name)-1);
+			file_obj.name[sizeof(file_obj.name)-1] = 0;
 			file_obj.size = size;
 			file_t file_read = mounts[i].fs->read(&file_obj);
 			if (file_read.offset == 0 && file_read.data == (void*)0 && file_read.size == 0 && file_read.name == (char*)0) continue;

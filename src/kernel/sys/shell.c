@@ -81,7 +81,6 @@ void shell_cmd_loop(void)
 			"poweroff -- shutdown the PC (hypervisor only)\n"
 			"reboot   -- reboot the PC\n"
 			"halt     -- halts the PC (non-recoverable)\n"
-			"echo     -- echoes the string you typed\n"
 			"credits  -- show credits\n"
 			"help     -- show this menu\n"
 			"clear    -- clears the screen\n"
@@ -141,11 +140,6 @@ void shell_cmd_loop(void)
 	/* panic */
 	else if (strcmp(cmd_buffer, "panic") == 0) {
 		panic("Manually triggered panic");
-	}
-
-	/* echo */
-	else if (strncmp(cmd_buffer, "echo ", 5) == 0) {
-		printf("%s\n", cmd_buffer + 5);
 	}
 
 	/* logo */
@@ -213,6 +207,16 @@ void shell_cmd_loop(void)
 
 	else if (strcmp(cmd_buffer, "crash") == 0) {
 		__asm__ volatile ("int3");
+	}
+
+	else if (strcmp(cmd_buffer, "fb_demo 0") == 0) {
+		fb_demo_2(framebuffer_info);
+	}
+	else if (strcmp(cmd_buffer, "fb_demo 1") == 0) {
+		fb_demo_3(framebuffer_info);
+	}
+	else if (strcmp(cmd_buffer, "fb_demo 2") == 0) {
+		fb_demo_4(framebuffer_info);
 	}
 
 	else {
