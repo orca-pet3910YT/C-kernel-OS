@@ -92,6 +92,7 @@ void shell_cmd_loop(void)
 			"square   -- draws 2 squares\n"
 			"setcan   -- sets canonical_md to true\n"
 			"setncan  -- sets canonical_md to false\n"
+			"crash    -- generates an exception for testing\n"
 		);
 	} 
 
@@ -208,6 +209,10 @@ void shell_cmd_loop(void)
 	}
 	else if (strcmp(cmd_buffer, "setncan") == 0) {
 		canonical_md = false;
+	}
+
+	else if (strcmp(cmd_buffer, "crash") == 0) {
+		__asm__ volatile ("int3");
 	}
 
 	else {

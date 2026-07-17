@@ -13,10 +13,12 @@ CCFLAGSC = -ffreestanding \
 	   -fno-pic \
 	   -fno-unwind-tables \
 	   -fno-asynchronous-unwind-tables \
+	   -fno-omit-frame-pointer \
+	   -fno-optimize-sibling-calls \
 	   -I include \
 	   -I include/kernel \
 	   -I include/lib \
-	   -nostdlib -Wall -Wextra -fno-ident -Wunused -O3 -msse2
+	   -nostdlib -Wall -Wextra -fno-ident -Wunused -O3 -msse2 -g
 SRC_C := $(shell find src -name '*.c')
 SRC_S := $(shell find src -name '*.s')
 SRC_ASM := $(shell find src -name '*.asm')
