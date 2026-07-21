@@ -38,6 +38,7 @@ ADDITIONAL = $(empty)
 
 all: build build/boot.iso.gz
 
+.PHONY: .version
 .version:
 	@echo "Running scripts/build_inc.sh"
 	@scripts/build_inc.sh
