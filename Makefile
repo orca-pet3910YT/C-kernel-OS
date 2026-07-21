@@ -31,19 +31,19 @@ empty :=
 
 MAJOR = 0
 MINOR = 05
-PATCH = 0
+PATCH = 1
 ADDITIONAL = $(empty)
 
 #.PHONY: build
 
 all: build build/boot.iso.gz
 
-.PHONY: .version
-.version:
+.PHONY: all
+version:
 	@echo "Running scripts/build_inc.sh"
 	@scripts/build_inc.sh
 
-build: .version
+build: | version
 	@echo "Create build/ subdirectories"
 	@mkdir -p build/src/dev build/src/kernel build/src/stdlib
 	@echo "Create include/generated/"
@@ -120,7 +120,7 @@ run-vnc: build/boot.iso
 	@echo "Running in QEMU (VNC 1)"
 	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial stdio -display vnc=:0 -d int -cpu max
 
-run-debug: build/boot.iso
+run-debug: build/boot.iso.gz
 	@echo "Running in QEMU (debugged)"
 	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial mon:vc -serial stdio -vga std -global VGA.vgamem_mb=128 -cpu max -s -S
 
