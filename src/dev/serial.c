@@ -44,12 +44,12 @@ void serial_init() {
 		if (CONFIG_COM1 && UART1) {
 			__init_com_(COM1);
 			printk(5, "serial: Initialized COM1");
-			serial_com1 = serial_com1 ? 1 : 0;
+			serial_com1 = !(!UART1);
 		}
 		if (CONFIG_COM2 && UART2) {
 			__init_com_(COM2);
 			printk(5, "serial: Initialized COM2");
-			serial_com2 = serial_com2 ? 1 : 0;
+			serial_com2 = !(!UART2);
 		}
 #else
 		printk(4, "serial: not configured because support is disabled");

@@ -25,6 +25,7 @@
 #include <sys/brainfuck.h> // brainfuck_interpret()
 #include <fs/vfs.h>
 #include <sys/shell.h>
+#include <sys/test.h>
 
 static fb_info_t fb_info_real;
 static color_info_t color_info_real;
@@ -216,7 +217,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	for (int i = 1; i < 100000; i++) (void)(is_prime(i));
 	post_test_time = uptime_ticks;
 	printk(4, "CPU test passed, took %d ms for a 100 thousand prime number calculation loop", (post_test_time-pre_test_time)/10);
-	
+	random_test();
 	printk(4, "hello/hello.txt with cwd /home/user: %s", resolve_path("hello/hello.txt", "/home/user"));
 	init_cpio();
 	printk(4, "Initialized cpio filesystem");

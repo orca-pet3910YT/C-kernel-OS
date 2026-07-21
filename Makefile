@@ -114,7 +114,7 @@ clean:
 
 run: build/boot.iso
 	@echo "Running in QEMU"
-	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial mon:vc -serial stdio -vga std -global VGA.vgamem_mb=128 -cpu max
+	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -nographic -cpu max
 
 run-vnc: build/boot.iso
 	@echo "Running in QEMU (VNC 1)"
@@ -122,7 +122,7 @@ run-vnc: build/boot.iso
 
 run-debug: build/boot.iso.gz
 	@echo "Running in QEMU (debugged)"
-	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial mon:vc -serial stdio -vga std -global VGA.vgamem_mb=128 -cpu max -s -S
+	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -nographic -cpu max -s -S
 
 menuconfig:
 	@kconfig-mconf Kconfig
