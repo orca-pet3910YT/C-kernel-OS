@@ -116,8 +116,8 @@ int cpio_unmount(struct filesystem *cpio_fs) {
 	return 0;
 }
 
-static filesystem_t cpio_fs;
-static struct mount cpio_mountpoint;
+static filesystem_t cpio_fs = {};
+static struct mount cpio_mountpoint = {};
 void init_cpio(void) {
 	cpio_fs.read = cpio_read;
 	cpio_fs.write = cpio_write;
@@ -127,10 +127,12 @@ void init_cpio(void) {
 	cpio_mountpoint.path[1] = 0;
 	cpio_mountpoint.fs = &cpio_fs;
 	cpio_fs.mountpoint = &cpio_mountpoint;
+	printk(4, "read %x write %x mount %x unmount %x", cpio_read, cpio_write, cpio_mount, cpio_unmount);
+	printk(4, "path %s fs %x mountpoint %x", &cpio_mountpoint.path, &cpio_fs, &cpio_mountpoint);
 	register_fs(&cpio_fs);
 	printk(4, "Mounting initramfs at root...");
 	int mount_code = mount(&cpio_fs, "/");
 	printk(6, "exit code: %d", mount_code);
-	if (mount_code) panic("Failed to mount initramfs: %d", mount_code);
+	if (mount_code != 0) panic("Failed to mount initramfs: %d", mount_code);
 	printk(4, "done.");
 }

@@ -108,7 +108,7 @@ file_t read(char *path, uint32_t size) {
 	file_obj.offset = 0;
 	for (int i = 0; i < mount_count; i++) {
 		if (mounts[i].fs->read) {
-			if (strncmp(path, mounts[i].path, strlen(mounts[i].path)) != 0) continue;
+			if (strncmp(path, mounts[i].path, strlen(mounts[i].path)-1) != 0) continue;
 			//char *filepath = path;
 			//filepath += strlen(mounts[i].path);
 			//if (*filepath != '/') filepath = strcat(root_str, filepath);

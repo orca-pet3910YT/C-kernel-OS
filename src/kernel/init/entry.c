@@ -218,11 +218,11 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	post_test_time = uptime_ticks;
 	printk(4, "CPU test passed, took %d ms for a 100 thousand prime number calculation loop", (post_test_time-pre_test_time)/10);
 	random_test();
-	printk(4, "hello/hello.txt with cwd /home/user: %s", resolve_path("hello/hello.txt", "/home/user"));
 	init_cpio();
 	printk(4, "Initialized cpio filesystem");
 	file_t init = read("/init", 5);
-	printk(4, "Run /init (%d bytes)", init.size);
+	printk(4, "read %x", read);
+	printk(4, "Run /init (%d bytes at %x)", init.size, init.data);
 	brainfuck_interpret(init.data, init.size);
 	printk(4, "write code %d", write(&init, "Hello, World!", 13));
 	file_t welcome_banner = read("/welcome", -1);
