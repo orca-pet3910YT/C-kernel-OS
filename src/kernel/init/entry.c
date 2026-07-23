@@ -221,7 +221,6 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	init_cpio();
 	printk(4, "Initialized cpio filesystem");
 	file_t init = read("/init", 5);
-	printk(4, "read %x", read);
 	printk(4, "Run /init (%d bytes at %x)", init.size, init.data);
 	brainfuck_interpret(init.data, init.size);
 	printk(4, "write code %d", write(&init, "Hello, World!", 13));
