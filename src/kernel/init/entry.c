@@ -150,8 +150,6 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	set_post(0x3E);
 	uint32_t *mbi_old = mbi;
 	serial_init();
-	serial_out = true;
-	serial_com1 = true;
 	kernel_id->major = CONFIG_KERNEL_MAJOR;
 	kernel_id->minor = CONFIG_KERNEL_MINOR;
 	kernel_id->patch = CONFIG_KERNEL_PATCH;

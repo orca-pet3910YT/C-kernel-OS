@@ -15,12 +15,22 @@ The features in this OS are... pretty lacking, but that'll be fixed over time.
 - `grub-pc-bin`
 - `kconfig-frontends`
 
-## Collaborating
-To collaborate to CkOS, you can use either of these methods:
-- Send git patches to orca.pet.git.patches@gmail.com (no spam please)
-- Make a PR with your update
+## Actually building
+To build this OS, you'll need build dependencies from above.
 
-Both of which require you comply to the rules above.
+The Make targets are:
+
+- `all`: just build the kernel
+- `run`: run the OS (and build the kernel if not already)
+- `run-vnc`: run the OS with graphics on the VNC server display :0 (previously used for developing on Android by the owner)
+- `run-debug`: run the OS with a GDB server on port :1234
+- `clean`: clean build files (not necessary for development)
+- `mrproper`: clean up EVERYTHING
+- `iso`: build the ISO
+- `isogz`: build and compress the ISO
+- `menuconfig`: configure the kernel
+- `allyesconfig`: enable everything
+- `allnoconfig`: disable everything
 
 ## Other projects worth visiting
 

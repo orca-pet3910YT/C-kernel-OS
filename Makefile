@@ -38,7 +38,7 @@ ADDITIONAL = $(empty)
 
 all: build build/boot.iso.gz
 
-.PHONY: all
+.PHONY: all build
 version:
 	@echo "Running scripts/build_inc.sh"
 	@scripts/build_inc.sh
@@ -112,15 +112,15 @@ clean:
 	@echo "Cleaning..."
 	@rm -rf build iso/bootImage.elf include/generated/*.h
 
-run: build/boot.iso
+run:
 	@echo "Running in QEMU"
 	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -nographic -cpu max
 
-run-vnc: build/boot.iso
+run-vnc:
 	@echo "Running in QEMU (VNC 1)"
 	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial stdio -display vnc=:0 -d int -cpu max
 
-run-debug: build/boot.iso.gz
+run-debug:
 	@echo "Running in QEMU (debugged)"
 	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -cpu max -s -S
 
