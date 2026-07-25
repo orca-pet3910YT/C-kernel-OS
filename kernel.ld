@@ -4,6 +4,7 @@ ENTRY(_start)
 SECTIONS
 {
 	. = 1M;
+	kernel_start_addr = .;
 
 	.multiboot ALIGN(8):
 	{
@@ -35,4 +36,5 @@ SECTIONS
 	{
 		*(.build_note)
 	}
+	kernel_end_addr = .;
 }

@@ -26,6 +26,7 @@
 #include <fs/vfs.h>
 #include <sys/shell.h>
 #include <sys/test.h>
+#include <arch/i386/pmm.h>
 
 static fb_info_t fb_info_real;
 static color_info_t color_info_real;
@@ -60,13 +61,13 @@ void parse_cmdline(char *input) {
 			//sputs("\e[0m\e[H\e[J\e[1J\e[2J\r\e[=7h\e[?25h");
 			/*
 			 * In order:
-			 * '\e[0m'            disable all modes
-			 * '\e[H'             move cursor to (0, 0)
-			 * '\e[J'             erase what's displayed
-			 * '\e[1J'            erase from cursor to beginning of screen
-			 * '\e[2J'            erase entire screen
-			 * '\e[=7h'           enable line wrap
-			 * '\e[?25h'          make cursor visible
+			 * '\e[0m'	    disable all modes
+			 * '\e[H'	     move cursor to (0, 0)
+			 * '\e[J'	     erase what's displayed
+			 * '\e[1J'	    erase from cursor to beginning of screen
+			 * '\e[2J'	    erase entire screen
+			 * '\e[=7h'	   enable line wrap
+			 * '\e[?25h'	  make cursor visible
 			 * Thanks to @fnky on GitHub for their Gist on this!
 			 */
 			printk(6, "Serial output enabled");
@@ -85,7 +86,7 @@ void debug_info_print() {
 	printk(6, "Git source tree commit hash: %s", GIT_SOURCE_HASH);
 	printk(6, "Kernel entry offset: %x, image offset: %x", _start, 1024*1024);
 	printk(6, "Compiler: %s", compiler);
-	if (c_version) printk(6, "Compiled with C%d", c_version);
+	if (c_version) printk(6, "Compiled with C %d", c_version);
 	if (compiler_ver[0] || compiler_ver[1] || compiler_ver[2]) printk(6, "%s %d.%d.%d", compiler, __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
 	printk(7, "Made by orca.pet3910YT with %s", "\x03");
 }
@@ -97,6 +98,40 @@ void vga_old_putc(char c, short loc) {
 struct cpufreq_s *cpufreq;
 char *no_fb_err = "A framebuffer is required to continue. If you have serial, boot logs will go there.";
 char command[256] = {0};
+
+extern uint32_t page_directory;
+extern uint32_t page_table_0;
+extern uint32_t kernel_start_addr;
+extern uint32_t kernel_end_addr;
+
+static uint32_t fb_table_0[1024] __attribute__((aligned(4096)));
+static uint32_t fb_table_1[1024] __attribute__((aligned(4096)));
+
+// fuck the MMU
+void map_framebuffer(fb_info_t *fbi) {
+	uint32_t active_cr3;
+	__asm__ volatile("mov %%cr3, %0" : "=r"(active_cr3)); // retrieve cr3
+	uint32_t *page_dir = (uint32_t*)(active_cr3 & ~0xFFF); 
+	uint32_t fb = (uint32_t)fbi->fb;
+	memset(fb_table_0, 0, 4096); // clear the tables
+	memset(fb_table_1, 0, 4096);
+	uint32_t pd_index_0 = fb >> 22;
+	uint32_t pd_index_1 = pd_index_0 + 1;
+	page_dir[pd_index_0] = ((uint32_t)fb_table_0) | 3;
+	page_dir[pd_index_1] = ((uint32_t)fb_table_1) | 3;
+	uint32_t current_physical = fb;
+	uint32_t fb_size_bytes = fbi->pitch*fbi->h;
+	uint32_t pages_needed = (fb_size_bytes+4095) / 4096; // calculates the pages needed
+	for (uint32_t i = 0; i < pages_needed; i++) {
+		if (i < 1024) {
+			fb_table_0[i] = current_physical | 3;
+		} else if (i < 2048) {
+			fb_table_1[i-1024] = current_physical | 3;
+		} else { break; }
+		current_physical += 4096;
+	}
+	__asm__ volatile ("mov %%cr3, %%eax; mov %%eax, %%cr3" : : : "eax"); // ensure the CPU knows the change happened
+}
 
 void _Noreturn kmain(int magic, uint32_t *mbi) {
 	(void)magic;
@@ -115,6 +150,8 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	set_post(0x3E);
 	uint32_t *mbi_old = mbi;
 	serial_init();
+	serial_out = true;
+	serial_com1 = true;
 	kernel_id->major = CONFIG_KERNEL_MAJOR;
 	kernel_id->minor = CONFIG_KERNEL_MINOR;
 	kernel_id->patch = CONFIG_KERNEL_PATCH;
@@ -125,6 +162,8 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	uint8_t *ptr = (uint8_t*)mbi;
 	uint32_t mbi_size = *mbi;
 	ptr += 8;
+	uint32_t max_ram_detected = 0;
+	char fb_reserved = 0;
 	// while the current tag pointer isn't past the end
 	while (ptr < (uint8_t*)mbi+mbi_size) {
 		printk(7, "tag type %d size %d ptr %x", *(uint32_t*)ptr, *(uint32_t*)(ptr+4), ptr);
@@ -135,11 +174,10 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 			fb_info->pitch = *(uint32_t*)(ptr+16);
 			fb_info->w = *(uint32_t*)(ptr+20);
 			fb_info->h = *(uint32_t*)(ptr+24);
+			if (fb_info->fb && !fb_reserved) pmm_deinit_region((uint32_t)fb_info->fb, fb_info->pitch*fb_info->h), fb_reserved = true;
 			fb_info->bpp = *(uint8_t*)(ptr+28);
+			printk(4, "fb: %x: %d:%d:%d (%d pitch) reserved: %d", fb_info->fb, fb_info->w, fb_info->h, fb_info->bpp, fb_info->pitch, fb_reserved);
 			if (fb_info->bpp == 32) can_font_init = 1;
-			// initialize framebuffer from data above
-			fb_init(fb_info, can_font_init);
-			draw_logo(fb_info);
 		} else if (*(uint32_t*)ptr == 1) {
 #ifndef CONFIG_CMDLINE_STR
 #if !CONFIG_CMDLINE
@@ -158,14 +196,49 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 			unsigned char rsdp_sign[9] = {0};
 			memcpy(rsdp_sign, ptr+8, 8);
 			printk(6, "RSDP signature: '%s', revision %d, RSDP at %x", &rsdp_sign, (uint32_t)*(ptr+23), *(uint32_t*)(ptr+24));
+		} else if (*(uint32_t*)ptr == 6) {
+			uint32_t tag_size = *(uint32_t*)(ptr+4);
+			uint32_t entry_size = *(uint32_t*)(ptr+8);
+			uint32_t mmap_bytes = tag_size-16;
+			uint32_t entries = mmap_bytes/entry_size;
+			uint8_t *entry_ptr = ptr+16;
+			for (uint32_t i = 0; i < entries; i++) {
+				uint64_t base = *(uint64_t*)entry_ptr;
+				uint64_t len = *(uint64_t*)(entry_ptr+8);
+				uint32_t entry_type = *(uint32_t*)(entry_ptr+16);
+				if (entry_type == 1) {
+					uint32_t base_low = (uint32_t)base;
+					uint32_t len_low = (uint32_t)len;
+					printk(4, "base_low: %x, len_low: %x", base_low, len_low);
+					uint32_t block_highest_address = base_low+len_low;
+					if (max_ram_detected < block_highest_address) max_ram_detected = block_highest_address;
+					if (base_low < 0x00100000) {
+						if (base_low+len_low > 0x00100000) {
+							uint32_t difference = 0x00100000-base_low;
+							base_low = 0x00100000;
+							len_low -= difference;
+						} else {
+							entry_ptr += entry_size;
+							continue;
+						}
+					}
+					pmm_init_region(base_low, len_low);
+				}
+				entry_ptr += entry_size;
+			}
+			if (fb_info->fb && !fb_reserved) pmm_deinit_region((uint32_t)fb_info->fb, fb_info->pitch*fb_info->h), fb_reserved = true;
 		}
 		ptr += (*(uint32_t*)(ptr+4)+7) & ~7;
 	}
-	printk(6, "---BEGIN Command line info---");
-	parse_cmdline(cmdline);
-	printk(4, "Parsed command line provided by bootloader");
-	printk(6, "--- END Command line info ---");
-
+	if (fb_info->fb && !fb_reserved) pmm_deinit_region((uint32_t)fb_info->fb, fb_info->pitch*fb_info->h), fb_reserved = true;
+	pmm_deinit_region(kernel_start_addr, kernel_end_addr-kernel_start_addr);
+	pmm_deinit_region(page_table_0, 4096);
+	pmm_deinit_region(page_directory, 4096);
+	printk(4, "fb_info %x can_font_init %d", fb_info, can_font_init);
+	map_framebuffer(fb_info);
+	fb_init(fb_info, can_font_init);
+	draw_logo(fb_info);
+	memory_size_total = max_ram_detected;
 	printk(0, "Hello, hello!");
 	printk(0, "%x %x %x %x", (uint32_t)mbi_old, (uint32_t)mbi, (uint32_t)ptr, (uint32_t)can_font_init);
 	gdt_init();

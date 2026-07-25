@@ -27,7 +27,7 @@ char serial_in = false; // true and false is defined in stdlib.h. while this is 
 char serial_out = false;
 char serial_com1 = true;
 char serial_com2 = true;
-volatile char kbc;
+volatile char kbc = 0;
 // i'm sorry fellow C developers for this shitty solution but i just have to do this
 volatile uint64_t uptime_ticks = 0;
 
@@ -57,3 +57,4 @@ uint32_t bg_color = 0x00000000;
 uint32_t drv_dbg[8];
 
 uint64_t kernel_boot_ticks = 0;
+uint32_t memory_size_total = 0;

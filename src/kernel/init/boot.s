@@ -24,6 +24,17 @@ multiboot_header:
 .long 8
 multiboot_head_end:
 
+.section .bss
+
+.align 4096
+.globl page_directory
+page_directory:
+.skip 4096
+.align 4096
+.globl page_table_0
+page_table_0:
+.skip 4096
+
 #.align 4
 #.long 0x1BADB002
 #.long (1 << 2) | (1 << 1)
@@ -39,7 +50,6 @@ multiboot_head_end:
 #.long 768
 #.long 32
 
-.section .bss
 .globl cpu_vendor
 cpu_vendor:
 .skip 13
@@ -57,12 +67,13 @@ stack_top:
 _start:
 	xor %ebp, %ebp # zero out ebp
 	# enable SSE
-	mov %ecx, %eax # preserve the magic
+	mov %eax, %esi # preserve the magic
+	mov %ebx, %edx # same for the MB ptr
 	mov %cr4, %eax
 	orl $0x600, %eax
 	mov %eax, %cr4
 	mov %cr0, %eax
-	andl $0xFFFFFFFB, %eax
+	andl $0xFFFFFFEB, %eax
 	orl $0x0002, %eax
 	mov %eax, %cr0
 	# set up stack
@@ -73,16 +84,45 @@ _start:
 	# initialize the FPU
 	fwait
 	fninit
-	push $stat_boot_fpu_init
-	call printk
-	push $stat_boot_init
-	call printk
-	pop %ecx
+	call gdt_init # initialize GDT for paging to work
+	mov $page_directory, %edi
+	mov $1024, %ecx
+	xorl %eax, %eax
+	rep stosl
+	mov $page_table_0, %edi
+	mov $1024, %ecx
+	xorl %eax, %eax
+	rep stosl
+	mov $page_table_0, %eax
+	xor %ebx, %ebx
+	mov $1024, %ecx
+	mov $page_table_0, %edi
+	# no need to explain what this part does
+.fill_page_table:
+	mov %ebx, %eax
+	orl $3, %eax
+	mov %eax, (%edi)
+	add $4096, %ebx
+	add $4, %edi
+	loop .fill_page_table
+	mov $page_table_0, %eax
+	orl $3, %eax
+	mov %eax, (page_directory)
+	# load the page directory
+	mov $page_directory, %eax
+	mov %eax, %cr3
+	mov %cr0, %eax
+	orl $0x80000001, %eax
+	mov %eax, %cr0
+	ljmp $0x08, $.cont
+.cont:
 	# push the arguments
-	push %ebx # mbi
-	push %ecx # magic
+	push %edx # mbi
+	push %esi # magic
+	xorl %edx, %edx
+	xorl %esi, %esi
 	call kmain
-	push stat_kmain_return
+	push $stat_kmain_return
 	call panic
 
 .section .rodata

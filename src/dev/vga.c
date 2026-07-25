@@ -257,6 +257,13 @@ int cprintf(const char *restrict format, va_list parameters) {
 			if (maxrem < strlen(buf)) return -1;
 			if (!print(buf, strlen(buf))) return -1;
 			written += strlen(buf);
+		} else if (*format == 'f') {
+			format++; double value = va_arg(parameters, int);
+			char buf[17] = {0};
+			ftoa(value, buf, 16);
+			if (maxrem < 17) return -1;
+			if (!print(buf, 17)) return -1;
+			written += 17;
 		} else {
 			format = format_begun_at;
 			size_t len = strlen(format);

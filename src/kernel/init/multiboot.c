@@ -6,6 +6,7 @@
 #include <drivers/video/font.h>
 #include <sys/panic.h>
 #include <generated/config.h>
+#include <arch/i386/pmm.h>
 
 static fb_info_t framebuffer_info_real;
 fb_info_t *framebuffer_info = &framebuffer_info_real;

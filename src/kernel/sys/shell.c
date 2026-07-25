@@ -218,6 +218,9 @@ void shell_cmd_loop(void)
 	else if (strcmp(cmd_buffer, "fb_demo 2") == 0) {
 		fb_demo_4(framebuffer_info);
 	}
+	else if (strcmp(cmd_buffer, "memsize") == 0) {
+		printf("Total memory size: %d bytes (%d MB)\n", memory_size_total, memory_size_total/1024/1024);
+	}
 
 	else {
 		printf("Invalid command, type help to show available commands\n");
