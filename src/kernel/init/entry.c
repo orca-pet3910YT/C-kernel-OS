@@ -297,6 +297,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	printk(4, "write code %d", write(&init, "Hello, World!", 13));
 	file_t welcome_banner = read("/welcome", -1);
 	if (welcome_banner.data) print(welcome_banner.data, welcome_banner.size);
+	printk(6, "max(2, 5) = %d, min(2, 5) = %d", max(2, 5), min(2, 5));
 	printk(7, "Hello, World!");
 #ifdef CONFIG_LOGO
 #if CONFIG_LOGO
