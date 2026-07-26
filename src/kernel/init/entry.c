@@ -117,8 +117,8 @@ void map_framebuffer(fb_info_t *fbi) {
 	memset(fb_table_1, 0, 4096);
 	uint32_t pd_index_0 = fb >> 22;
 	uint32_t pd_index_1 = pd_index_0 + 1;
-	page_dir[pd_index_0] = ((uint32_t)fb_table_0) | 3;
-	page_dir[pd_index_1] = ((uint32_t)fb_table_1) | 3;
+	page_dir[pd_index_0] = ((uint32_t)fb_table_0) | 0x1b;
+	page_dir[pd_index_1] = ((uint32_t)fb_table_1) | 0x1b;
 	uint32_t current_physical = fb;
 	uint32_t fb_size_bytes = fbi->pitch*fbi->h;
 	uint32_t pages_needed = (fb_size_bytes+4095) / 4096; // calculates the pages needed
@@ -127,7 +127,7 @@ void map_framebuffer(fb_info_t *fbi) {
 			fb_table_0[i] = current_physical | 3;
 		} else if (i < 2048) {
 			fb_table_1[i-1024] = current_physical | 3;
-		} else { break; }
+		} else { fb_info = 0; break; }
 		current_physical += 4096;
 	}
 	__asm__ volatile ("mov %%cr3, %%eax; mov %%eax, %%cr3" : : : "eax"); // ensure the CPU knows the change happened
@@ -174,7 +174,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 			fb_info->h = *(uint32_t*)(ptr+24);
 			if (fb_info->fb && !fb_reserved) pmm_deinit_region((uint32_t)fb_info->fb, fb_info->pitch*fb_info->h), fb_reserved = true;
 			fb_info->bpp = *(uint8_t*)(ptr+28);
-			printk(4, "fb: %x: %d:%d:%d (%d pitch) reserved: %d", fb_info->fb, fb_info->w, fb_info->h, fb_info->bpp, fb_info->pitch, fb_reserved);
+			printk(4, "fb: %x: %dx%dx%d (%d pitch) reserved: %d", fb_info->fb, fb_info->w, fb_info->h, fb_info->bpp, fb_info->pitch, fb_reserved);
 			if (fb_info->bpp == 32) can_font_init = 1;
 		} else if (*(uint32_t*)ptr == 1) {
 #ifndef CONFIG_CMDLINE_STR
@@ -233,6 +233,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	pmm_deinit_region(page_table_0, 4096);
 	pmm_deinit_region(page_directory, 4096);
 	printk(4, "fb_info %x can_font_init %d", fb_info, can_font_init);
+	if (fb_info->fb < 0x00100000) panic("Invalid framebuffer, cannot continue");
 	map_framebuffer(fb_info);
 	fb_init(fb_info, can_font_init);
 	draw_logo(fb_info);
@@ -297,7 +298,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	printk(4, "write code %d", write(&init, "Hello, World!", 13));
 	file_t welcome_banner = read("/welcome", -1);
 	if (welcome_banner.data) print(welcome_banner.data, welcome_banner.size);
-	printk(6, "max(2, 5) = %d, min(2, 5) = %d", max(2, 5), min(2, 5));
+	printk(6, "max(2, 5) = %d, min(2, 5) = %d, 2^16 = %d", max(2, 5), min(2, 5), x_pow_2y(2, 4));
 	printk(7, "Hello, World!");
 #ifdef CONFIG_LOGO
 #if CONFIG_LOGO

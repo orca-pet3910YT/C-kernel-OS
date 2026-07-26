@@ -18,6 +18,7 @@ CCFLAGSC = -ffreestanding \
 	   -I include \
 	   -I include/kernel \
 	   -I include/lib \
+	   -msse \
 	   -nostdlib -Wall -Wextra -fno-ident -Wunused -O3 -msse2 -g
 SRC_C := $(shell find src -name '*.c')
 SRC_S := $(shell find src -name '*.s')

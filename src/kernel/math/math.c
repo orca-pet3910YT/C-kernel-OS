@@ -22,3 +22,8 @@ char is_prime(int n) {
 	}
 	return 1;
 }
+
+int x_pow_2y(int x, int y) {
+	int z = y;
+	for (; y; y--) x *= x; return !z ? 1 : x;
+}
