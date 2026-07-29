@@ -233,7 +233,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	pmm_deinit_region(page_table_0, 4096);
 	pmm_deinit_region(page_directory, 4096);
 	printk(4, "fb_info %x can_font_init %d", fb_info, can_font_init);
-	if (fb_info->fb < 0x00100000) panic("Invalid framebuffer, cannot continue");
+	if ((uint32_t)fb_info->fb < (uint32_t)0x00100000) panic("Invalid framebuffer, cannot continue");
 	map_framebuffer(fb_info);
 	fb_init(fb_info, can_font_init);
 	draw_logo(fb_info);

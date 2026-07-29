@@ -136,7 +136,7 @@ int cpio_ls(char *directory, char **output) {
 		output++;
 		archive += __align_4b(filesize);
 	}
-	if (output_old == output) return -ENOFND;
+	if ((char**)output_old == output) return -ENOFND;
 	return 0;
 }
 
