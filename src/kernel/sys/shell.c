@@ -14,6 +14,8 @@
 #include <drivers/timers/pit.h>
 #include <generated/config.h>
 #include <sys/multiboot.h>
+#include <fs/vfs.h>
+
 #define BUFFER_WIDTH 2048
 /* if true the typed word only shows after the user does EOF or a newline
  * if false the typed word shows directly
@@ -30,7 +32,7 @@ void shell_init(void)
 void shell_cmd_loop(void)
 {
 	memset(cmd_buffer, 0, sizeof(cmd_buffer));
-	printf("$ ");
+	printf("%s $ ", cwd);
 	char c = 0;
 	int cmdb_ptr = 0;
 	/* get output first*/
@@ -42,7 +44,7 @@ void shell_cmd_loop(void)
 			/* null end it */
 			cmd_buffer[cmdb_ptr] = '\0';
 			if (!strlen(cmd_buffer)) {
-				printf("\n$ ");
+				printf("\n%s $ ", cwd);
 				cmdb_ptr = 0;
 				continue;
 			}
@@ -94,6 +96,25 @@ void shell_cmd_loop(void)
 			"crash    -- generates an exception for testing\n"
 		);
 	} 
+	
+	/* list files */
+	else if (strncmp(cmd_buffer, "ls", 2) == 0) {
+		if (!*(cmd_buffer+3) || strlen(cmd_buffer) < 3) {
+			printf("No support for working directory yet\n");
+			return;
+		}
+		char _dirs[32][256] = {0};
+		char **dirs = (char**)_dirs; // shut up the compiler because _dirs is literally an array of fucking arrays so why would it not decay to char**
+		int ls_err = list_dir(cmd_buffer+3, dirs);
+		if (ls_err != 0) {
+			printf("ls: error listing files (-%u)\n", -ls_err);
+			return;
+		}
+		for (int i = 0; i < 31 && dirs[i]; i++) {
+			printf("%s ", dirs[i]);
+		}
+		putc('\n');
+	}
 
 	/* hello */
 	else if (strcmp(cmd_buffer, "hello") == 0) {

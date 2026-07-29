@@ -31,8 +31,8 @@ OBJECTS := $(shell shuf -e $(OBJECTS) | tr '\n' ' ')
 empty :=
 
 MAJOR = 0
-MINOR = 05
-PATCH = 1
+MINOR = 06
+PATCH = 0
 ADDITIONAL = $(empty)
 
 #.PHONY: build

@@ -58,3 +58,4 @@ uint32_t drv_dbg[8];
 
 uint64_t kernel_boot_ticks = 0;
 uint32_t memory_size_total = 0;
+char *cwd = "/";

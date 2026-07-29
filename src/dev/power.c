@@ -5,6 +5,7 @@
 #include <drivers/uart/serial.h>
 #include <arch/i386/pic.h>
 #include <drivers/timers/pit.h>
+#include <fs/vfs.h>
 
 static inline void outw(uint16_t port, uint16_t value) {
 	__asm__ volatile ("outw %0, %1" : : "a"(value), "Nd"(port));
@@ -12,7 +13,9 @@ static inline void outw(uint16_t port, uint16_t value) {
 
 void system_shutdown() {
 	printk(4, "power: The system will shut down!");
-        __asm__ volatile ("cli");
+	vfs_shutdown();
+	printk(4, "Shut down VFS");
+	__asm__ volatile ("cli");
         printk(6, "power: Disabled interrupts");
         serial_shutdown();
         printk(6, "Disabled serial");

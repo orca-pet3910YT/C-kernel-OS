@@ -24,6 +24,7 @@ extern uint32_t bg_color;
 extern uint64_t kernel_boot_ticks;
 extern uint32_t drv_dbg[8];
 extern uint32_t memory_size_total;
+extern char *cwd;
 
 // Print levels
 #define PR_EMERG 0

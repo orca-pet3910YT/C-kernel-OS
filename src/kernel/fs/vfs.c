@@ -3,6 +3,7 @@
 #include <string.h>
 #include <drivers/video/vga.h>
 #include <error.h>
+#include <sys/globals.h>
 
 #define MAX_FS 4
 #define MAX_MOUNT 8
@@ -106,7 +107,7 @@ int vfs_shutdown() {
 file_t read(char *path, uint32_t size) {
 	file_t file_obj = {0};
 	file_obj.offset = 0;
-	for (int i = 0; i < mount_count; i++) {
+	for (int i = 0; i < MAX_MOUNT; i++) {
 		if (mounts[i].fs->read) {
 			if (strncmp(path, mounts[i].path, strlen(mounts[i].path)-1) != 0) continue;
 			//char *filepath = path;
@@ -144,4 +145,15 @@ int write(file_t *file_obj, void *data, int size) {
 		}
 	}
 	return 1;
+}
+
+int list_dir(char *directory, char **output) {
+	if (!directory || !output) return -EBADARG;
+	for (int i = 0; i < MAX_MOUNT; i++) {
+		if (mounts[i].fs->list_dir) {
+			if (strncmp(directory, mounts[i].path, strlen(mounts[i].path)-1) != 0) continue;
+			return mounts[i].fs->list_dir(directory, output);
+		}
+	}
+	return -ENOFND;
 }

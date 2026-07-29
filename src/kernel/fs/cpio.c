@@ -6,6 +6,7 @@
 #include <fs/cpio.h>
 #include <fs/vfs.h>
 #include <sys/panic.h>
+#include <error.h>
 
 typedef struct {
 	char c_magic[6];
@@ -116,6 +117,29 @@ int cpio_unmount(struct filesystem *cpio_fs) {
 	return 0;
 }
 
+int cpio_ls(char *directory, char **output) {
+	const char **output_old = (const char **)output;
+	uint8_t *archive = _binary_bin_initrd_cpio_start;
+	if (!directory || !output) return -EBADARG;
+	for (;;) {
+		cpio_head_t *header = (cpio_head_t*)archive;
+		if (memcmp(header->c_magic, "070701", 6) != 0) return -EGENERIC;
+		int namesize = atoh(header->c_namesize, 8);
+		int filesize = atoh(header->c_filesize, 8);
+		if (!strcmp((const char*)(archive+110), "TRAILER!!!")) break; // EOF file
+		archive += 110;
+		uint8_t *name = archive;
+		int head_skip = __align_4b(namesize+110);
+		archive -= 110;
+		archive += head_skip;
+		*output = (char*)name;
+		output++;
+		archive += __align_4b(filesize);
+	}
+	if (output_old == output) return -ENOFND;
+	return 0;
+}
+
 static filesystem_t cpio_fs = {};
 static struct mount cpio_mountpoint = {};
 void init_cpio(void) {
@@ -123,6 +147,7 @@ void init_cpio(void) {
 	cpio_fs.write = cpio_write;
 	cpio_fs.mount = cpio_mount;
 	cpio_fs.unmount = cpio_unmount;
+	cpio_fs.list_dir = cpio_ls;
 	cpio_mountpoint.path[0] = '/';
 	cpio_mountpoint.path[1] = 0;
 	cpio_mountpoint.fs = &cpio_fs;

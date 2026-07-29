@@ -6,4 +6,6 @@
 #define EUNAVAIL 3
 #define ETOOBIG 4
 #define ENOFND 5
+#define EEOF 6
+#define EBADARG 7
 #endif

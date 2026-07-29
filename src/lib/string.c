@@ -14,7 +14,7 @@ int strcmp(const char *a, const char *b) {
 
 int strncmp(const char *a, const char *b, unsigned int count) {
 	if (!a || !b) return -1;
-	while (*a && *b && *a == *b && count) { a++; b++; count--; }
+	while (*a && *b && *a == *b && count-1) { a++; b++; count--; }
 	return *a - *b;
 }
 
