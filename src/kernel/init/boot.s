@@ -65,6 +65,8 @@ stack_top:
 .extern kmain
 .extern panic
 _start:
+	cmpl $0x36D76289, %eax
+	jne .linux_fail
 	xor %ebp, %ebp # zero out ebp
 	# enable SSE
 	mov %eax, %esi # preserve the magic
@@ -124,6 +126,19 @@ _start:
 	call kmain
 	push $stat_kmain_return
 	call panic
+
+.linux_fail:
+	mov $4, %eax
+	mov $1, %ebx
+	mov $linux_fail_msg, %ecx
+	mov $linux_fail_len, %edx
+	int $0x80
+	mov $1, %eax
+	xor %ebx, %ebx
+	int $0x80
+
+linux_fail_msg: .ascii "CkOS: invalid environment, needs Multiboot2 compatibility\n"
+linux_fail_len = . - linux_fail_msg
 
 .section .rodata
 stat_kmain_return:
