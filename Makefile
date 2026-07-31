@@ -39,79 +39,55 @@ ADDITIONAL = $(empty)
 
 all: build build/boot.iso.gz
 
-.PHONY: all build
-version:
-	@echo "Running scripts/build_inc.sh"
-	@scripts/build_inc.sh
-
-build: | version
-	@echo "Create build/ subdirectories"
-	@mkdir -p build/src/dev build/src/kernel build/src/stdlib
-	@echo "Create include/generated/"
-	@mkdir -p include/generated
-	@echo "Setting script permissions"
-	@chmod +x scripts/*.sh
-	@echo "Running scripts/check_dirs.sh"
-	@scripts/check_dirs.sh
-	@echo "Running scripts/gen_ver.sh"
-	@scripts/gen_ver.sh
-	@echo "Running scripts/gen_ver_ex.sh"
-	@scripts/gen_ver_ex.sh
+build:
+	@echo "    RUN  scripts/build_inc.sh"; scripts/build_inc.sh
+	@echo "  MKDIR  build/src/dev build/src/kernel build/src/stdlib"; mkdir -p build/src/dev build/src/kernel build/src/stdlib
+	@echo "  MKDIR  include/generated/"; mkdir -p include/generated
+	@echo "  CHMOD  scripts/*.sh"; chmod +x scripts/*.sh
+	@echo "    RUN  scripts/check_dirs.sh"; scripts/check_dirs.sh
+	@echo "    RUN  scripts/gen_ver.sh"; scripts/gen_ver.sh
+	@echo "    RUN  scripts/gen_ver_ex.sh"; scripts/gen_ver_ex.sh
 
 include/generated/config.h: .config | build
-	@echo "Config has been changed. Regenerating"
-	@scripts/gen_conf.sh $(MAJOR) $(MINOR) $(PATCH) "$(ADDITIONAL)"
-	@echo "Config regenerated"
+	@echo "   MAKE  make.gen"; MAJOR=$(MAJOR) MINOR=$(MINOR) PATCH=$(PATCH) ADDITIONAL=$(ADDITIONAL) $(MAKE) -f make.gen --no-print-directory
 
 build/src/%.c.o: src/%.c include/generated/config.h | build
 	@mkdir -p $(dir $@)
-	@echo "Compiling $<"
+	@echo "     CC  $<"
 	@clang -c $< -o $@ $(CCFLAGSC)
 
 build/src/%.s.o: src/%.s | build
 	@mkdir -p $(dir $@)
-	@echo "Assembling $<"
+	@echo "     AS  $<"
 	@clang -c $< -o $@ $(CCFLAGS)
 
 build/src/%.asm.o: src/%.asm | build
 	@mkdir -p $(dir $@)
-	@echo "Assembling $<"
+	@echo "   NASM  $<"
 	@nasm -f elf32 $< -o $@
 
-build/font_file.o: bin/default_8x16.psf | build
-	@echo "Creating font object"
-	@ld.lld -r -b binary $< -o $@ -m elf_i386
-
-build/logo.o: bin/logo.raw | build
-	@echo "Building logo object"
-	@$(CROSS)objcopy -I binary -O elf32-i386 bin/logo.raw build/logo.o
-
+build/font_file.o: include/generated/config.h
+build/logo.o: include/generated/config.h
 initrd: build/initrd.o
-build/initrd.o: bin/initrd.cpio | build
-	@echo "Building initramfs"
-	@$(CROSS)objcopy -I binary -O elf32-i386 bin/initrd.cpio build/initrd.o
+build/initrd.o: include/generated/config.h
 
 kernel: build/bootImage.elf
 build/bootImage.elf: $(OBJECTS)
-	@echo "Linking the kernel"
-	@ld.lld -m elf_i386 -T kernel.ld $(OBJECTS) -o build/bootImage.unstripped.elf
-	@echo "Stripping the kernel"
-	@$(CROSS)strip -s build/bootImage.unstripped.elf -o build/bootImage.elf
+	@echo "    LLD  build/bootImage.unstripped.elf"; ld.lld -m elf_i386 -T kernel.ld $(OBJECTS) -o build/bootImage.unstripped.elf
+	@echo "  STRIP  build/bootImage.elf"; $(CROSS)strip -s build/bootImage.unstripped.elf -o build/bootImage.elf
 
 iso: build/boot.iso
 build/boot.iso: build/bootImage.elf
-	@echo "Copying kernels"
 	@cp build/bootImage.elf build/bootImage.unstripped.elf iso
-	@echo "Make bootable ISO"
-	@grub-mkrescue -d /usr/lib/grub/i386-pc -o build/boot.iso iso
+	@echo "    ISO  build/boot.iso"; grub-mkrescue -d /usr/lib/grub/i386-pc -o build/boot.iso iso > /dev/null 2> /dev/null
 isogz: build/boot.iso.gz
 build/boot.iso.gz: build/boot.iso
-	@echo "Compressing ISO for distribution"
-	@gzip -f9k build/boot.iso
+	@echo "   GZIP  build/boot.iso.gz"; gzip -f9k build/boot.iso
 
 clean:
-	@echo "Cleaning..."
-	@rm -rf build iso/bootImage.elf include/generated/*.h
+	@echo "  CLEAN  build"; rm -rf build
+	@echo "  CLEAN  iso/bootImage.elf"; rm -f iso/bootImage.elf
+	@echo "  CLEAN  include/generated"; rm -rf include/generated
 
 run:
 	@echo "Running in QEMU"
@@ -135,5 +111,4 @@ allnoconfig:
 	@kconfig-conf --allnoconfig Kconfig
 
 mrproper:
-	@echo "Erasing all data!"
-	@rm -rf build iso/bootImage.elf include/generated/*.h .version
+	@echo "  CLEAN  build iso/bootImage.elf include/generated/*.h version"; rm -rf build iso/bootImage.elf include/generated/*.h .version

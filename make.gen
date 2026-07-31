@@ -1,0 +1,20 @@
+togen: include/generated/config.h build/font_file.o build/logo.o build/initrd.o
+
+build:
+	@mkdir -p build
+
+include/generated:
+	@mkdir -p include/generated
+
+include/generated/config.h: .config | build include/generated
+	@echo "    GEN  include/generated/config.h"; scripts/gen_conf.sh $(MAJOR) $(MINOR) $(PATCH) "$(ADDITIONAL)"
+
+build/font_file.o: bin/default_8x16.psf | build
+	@echo "    GEN  build/font_file.o"; ld.lld -r -b binary $< -o $@ -m elf_i386
+
+build/logo.o: bin/logo.raw | build
+	@echo "    GEN  build/logo.o"; $(CROSS)objcopy -I binary -O elf32-i386 bin/logo.raw build/logo.o
+
+build/initrd.o: bin/initrd.cpio | build
+	@echo "    GEN  build/initrd.o"; $(CROSS)objcopy -I binary -O elf32-i386 bin/initrd.cpio build/initrd.o
+
