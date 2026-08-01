@@ -62,7 +62,7 @@ int unregister_fs(filesystem_t *fs) {
 int mount(struct filesystem *fs, char *path) {
 	mount_t mountpoint;
 	int free_mount = 0;
-	if (fs->read && fs->write && fs->mount && fs->unmount) {
+	if (fs && fs->read && fs->write && fs->mount && fs->unmount) {
 		mountpoint.fs = fs;
 		if (strlen(path) > 255) {
 			printk(2, "vfs: error: mountpoint path too large. %d > 255 (-%d)", strlen(path), ETOOBIG);
@@ -108,7 +108,7 @@ file_t read(char *path, uint32_t size) {
 	file_t file_obj = {0};
 	file_obj.offset = 0;
 	for (int i = 0; i < MAX_MOUNT; i++) {
-		if (mounts[i].fs->read) {
+		if (mounts[i].fs && mounts[i].fs->read) {
 			if (strncmp(path, mounts[i].path, strlen(mounts[i].path)-1) != 0) continue;
 			//char *filepath = path;
 			//filepath += strlen(mounts[i].path);
@@ -134,8 +134,8 @@ file_t read(char *path, uint32_t size) {
 }
 
 int write(file_t *file_obj, void *data, int size) {
-	for (int i = 0; i < mount_count; i++) {
-		if (mounts[i].fs->write) {
+	for (int i = 0; i < MAX_MOUNT; i++) {
+		if (mounts[i].fs && mounts[i].fs->write) {
 			char *filepath = file_obj->name;
 			filepath += strlen(mounts[i].path);
 			if (*filepath != '/') filepath = strcat(root_str, filepath);
@@ -150,7 +150,7 @@ int write(file_t *file_obj, void *data, int size) {
 int list_dir(char *directory, char **output) {
 	if (!directory || !output) return -EBADARG;
 	for (int i = 0; i < MAX_MOUNT; i++) {
-		if (mounts[i].fs->list_dir) {
+		if (mounts[i].fs && mounts[i].fs->list_dir) {
 			if (strncmp(directory, mounts[i].path, strlen(mounts[i].path)-1) != 0) continue;
 			return mounts[i].fs->list_dir(directory, output);
 		}

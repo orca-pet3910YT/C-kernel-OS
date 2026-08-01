@@ -258,7 +258,7 @@ int cprintf(const char *restrict format, va_list parameters) {
 			if (!print(buf, strlen(buf))) return -1;
 			written += strlen(buf);
 		} else if (*format == 'f') {
-			format++; double value = va_arg(parameters, int);
+			format++; double value = va_arg(parameters, double);
 			char buf[17] = {0};
 			ftoa(value, buf, 16);
 			if (maxrem < 17) return -1;

@@ -15,6 +15,7 @@
 #include <generated/config.h>
 #include <sys/multiboot.h>
 #include <fs/vfs.h>
+#include <math/math.h>
 
 #define BUFFER_WIDTH 2048
 /* if true the typed word only shows after the user does EOF or a newline
@@ -22,6 +23,7 @@
  */
 static bool canonical_md = false;
 static char cmd_buffer[BUFFER_WIDTH];
+static char *dirs[32] = {0};
 
 void shell_init(void)
 {
@@ -99,18 +101,22 @@ void shell_cmd_loop(void)
 	
 	/* list files */
 	else if (strncmp(cmd_buffer, "ls", 2) == 0) {
-		if (!*(cmd_buffer+3) || strlen(cmd_buffer) < 3) {
-			printf("No support for working directory yet\n");
-			return;
+		char cwd[256] = {0};
+		for (int i = 0; i < 32; i++) {
+			dirs[i] = 0;
 		}
-		char _dirs[32][256] = {0};
-		char **dirs = (char**)_dirs; // shut up the compiler because _dirs is literally an array of fucking arrays so why would it not decay to char**
-		int ls_err = list_dir(cmd_buffer+3, dirs);
+		if (!*(cmd_buffer+3) || strlen(cmd_buffer) < 3) {
+			cwd[0] = '/';
+			cwd[1] = 0;
+		} else {
+			strncpy(cwd, cmd_buffer+3, min(strlen(cmd_buffer+3), 255));
+		}
+		int ls_err = list_dir(cwd, dirs);
 		if (ls_err != 0) {
 			printf("ls: error listing files (-%u)\n", -ls_err);
 			return;
 		}
-		for (int i = 0; i < 31 && dirs[i]; i++) {
+		for (int i = 0; i < 32 && dirs[i]; i++) {
 			printf("%s ", dirs[i]);
 		}
 		putc('\n');
@@ -254,7 +260,7 @@ void shell_cmd_loop(void)
  */
 void print_term_license(void)
 {
-	printf("C-Kernel-OS Copyright (C) 2026 orca-pet3910YT\n");
+	printf("C kernel OS Copyright (C) 2026 orca.pet3910YT\n");
     	printf("This program comes with ABSOLUTELY NO WARRANTY; for details type 'wlicense'.\n");
     	printf("This is free software, and you are welcome to redistribute it\n");
     	printf("under certain conditions; type 'dlicense' for details.\n\n");

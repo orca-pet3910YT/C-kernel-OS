@@ -104,7 +104,7 @@ file_t cpio_read(file_t *file_obj_p) {
 int cpio_write(file_t *file_obj, void *data, int size) {
 	(void)file_obj; (void)data;
 	(void)size;
-	return 1;
+	return -ENOSUP;
 }
 
 int cpio_mount(struct filesystem *cpio_fs) {
@@ -123,7 +123,7 @@ int cpio_ls(char *directory, char **output) {
 	if (!directory || !output) return -EBADARG;
 	for (;;) {
 		cpio_head_t *header = (cpio_head_t*)archive;
-		if (memcmp(header->c_magic, "070701", 6) != 0) return -EGENERIC;
+		if (memcmp(header->c_magic, "070701", 6) != 0) return -EBAD;
 		int namesize = atoh(header->c_namesize, 8);
 		int filesize = atoh(header->c_filesize, 8);
 		if (!strcmp((const char*)(archive+110), "TRAILER!!!")) break; // EOF file

@@ -98,7 +98,7 @@ void panic(const char *msg, ...) {
 	printk(msg); // i trust you are mature and won't put weird shit on purpose into the msg buffer
 	printk("]---");*/
 	if (panicking) {
-		printk(0, "**** DOUBLE PANIC - SYSTEM HALTED ****");
+		printk(0, "DOUBLE PANIC - SYSTEM HALTED");
 		__asm__ volatile ("cli; hlt");
 	}
 	panicking = 1;
@@ -106,7 +106,7 @@ void panic(const char *msg, ...) {
 	va_start(params, msg);
 #if CONFIG_PRETTY_PANIC
 	set_color(0x001FFF1F, 0x00000000); // 0x000000AA, 0x00FFFFFF
-	clear_screen();
+	//clear_screen();
 	tx = 5; ty = 5;
 	printf("This machine ran into an irrecoverable error. See logs below for more information.\n");
 	tx = 0; ty = 10;
@@ -128,7 +128,7 @@ void panic(const char *msg, ...) {
 		printk(0, "EAX: %x EBX: %x ECX: %x EDX: %x", regs->eax, regs->ebx, regs->ecx, regs->edx);
 		printk(0, "At %x:%x accessing %x:%x, EBP: %x, ESP: %x", regs->cs, regs->eip, regs->ds, regs->edi, regs->ebp, regs->esp);
 		printk(0, "EFLAGS: %x", regs->eflags);
-		printk(0, "Code: %x %x %x %x", reverse(*(int*)regs->eip), reverse(*((int*)(regs->eip)+4)), reverse(*((int*)(regs->eip)+8)), reverse(*((int*)(regs->eip)+12)));
+		if (regs->eip > 0x00100000 && regs->eip < 0x07ffffff) printk(0, "Code: %x %x %x %x", reverse(*(int*)regs->eip), reverse(*((int*)(regs->eip)+1)), reverse(*((int*)(regs->eip)+2)), reverse(*((int*)(regs->eip)+3)));
 	}
 	printk(0, "--- END Panic info ---");
 	// second header (or the end header)
@@ -137,7 +137,5 @@ void panic(const char *msg, ...) {
 	while (*__panic__post && __panic_j < 1023) __panic_buf2[__panic_j++] = *__panic__post++;
 	__panic_buf2[__panic_j] = '\0'; // NULL terminate
 	cprintk(0, __panic_buf2, params);
-	flush_term();
-	va_end(params);
 	__asm__ volatile ("hlt");
 }

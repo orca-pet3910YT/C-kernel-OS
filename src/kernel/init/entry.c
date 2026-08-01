@@ -295,10 +295,13 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	file_t init = read("/init", 5);
 	printk(4, "Run /init (%d bytes at %x)", init.size, init.data);
 	brainfuck_interpret(init.data, init.size);
-	printk(4, "write code %d", write(&init, "Hello, World!", 13));
+	printk(4, "write code -%d", -write(&init, "Hello, World!", 13));
 	file_t welcome_banner = read("/welcome", -1);
 	if (welcome_banner.data) print(welcome_banner.data, welcome_banner.size);
 	printk(6, "max(2, 5) = %d, min(2, 5) = %d, 2^16 = %d", max(2, 5), min(2, 5), x_pow_2y(2, 4));
+	printk(6, "(args in deg) sin(0) = %f sin(90) = %f sin(180) = %f sin(270) = %f",
+			sin(0), sin(90), sin(180), sin(270)
+	);
 	printk(7, "Hello, World!");
 #ifdef CONFIG_LOGO
 #if CONFIG_LOGO
