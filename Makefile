@@ -41,9 +41,6 @@ all: build build/boot.iso.gz
 
 build:
 	@echo "    RUN  scripts/build_inc.sh"; scripts/build_inc.sh
-	@echo "  MKDIR  build/src/dev build/src/kernel build/src/stdlib"; mkdir -p build/src/dev build/src/kernel build/src/stdlib
-	@echo "  MKDIR  include/generated/"; mkdir -p include/generated
-	@echo "  CHMOD  scripts/*.sh"; chmod +x scripts/*.sh
 	@echo "    RUN  scripts/check_dirs.sh"; scripts/check_dirs.sh
 	@echo "    RUN  scripts/gen_ver.sh"; scripts/gen_ver.sh
 	@echo "    RUN  scripts/gen_ver_ex.sh"; scripts/gen_ver_ex.sh
@@ -86,7 +83,7 @@ build/boot.iso.gz: build/boot.iso
 
 clean:
 	@echo "  CLEAN  build"; rm -rf build
-	@echo "  CLEAN  iso/bootImage.elf"; rm -f iso/bootImage.elf
+	@echo "  CLEAN  iso/*.elf"; rm -f iso/*.elf
 	@echo "  CLEAN  include/generated"; rm -rf include/generated
 
 run:
@@ -111,4 +108,7 @@ allnoconfig:
 	@kconfig-conf --allnoconfig Kconfig
 
 mrproper:
-	@echo "  CLEAN  build iso/bootImage.elf include/generated/*.h version"; rm -rf build iso/bootImage.elf include/generated/*.h .version
+	@echo "  CLEAN  build"; rm -rf build
+	@echo "  CLEAN  iso/*.elf"; rm -f iso/*.elf
+	@echo "  CLEAN  include/generated"; rm -rf include/generated
+	@echo "  CLEAN  .version"; echo -n "0" > .version
