@@ -27,6 +27,7 @@
 #include <sys/shell.h>
 #include <sys/test.h>
 #include <arch/i386/pmm.h>
+#include <fs/hifs.h>
 
 static fb_info_t fb_info_real;
 static color_info_t color_info_real;
@@ -282,8 +283,6 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	}
 	post_test_time = uptime_ticks;
 	printk(4, "CPU test passed, took %d ms for a 10 million XOR repetitions loop", (post_test_time-pre_test_time)/10);
-	printk(4, "square root of 4 is %d and of 9 is %d", sqrt(4), sqrt(9));
-	printk(4, "4 is%s a prime, 0x7FFFFFFF is%s a prime and 13 is%s a prime", is_prime(4) ? "" : " not", is_prime(0x7FFFFFFF) ? "" : " not", is_prime(13) ? "" : " not");
 	printk(4, "testing primes from 1 to 100000");
 	pre_test_time = uptime_ticks;
 	for (int i = 1; i < 100000; i++) (void)(is_prime(i));
@@ -298,10 +297,10 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	printk(4, "write code -%d", -write(&init, "Hello, World!", 13));
 	file_t welcome_banner = read("/welcome", -1);
 	if (welcome_banner.data) print(welcome_banner.data, welcome_banner.size);
-	printk(6, "max(2, 5) = %d, min(2, 5) = %d, 2^16 = %d", max(2, 5), min(2, 5), x_pow_2y(2, 4));
-	printk(6, "(args in deg) sin(0) = %f sin(90) = %f sin(180) = %f sin(270) = %f",
-			sin(0), sin(90), sin(180), sin(270)
-	);
+	hifs_init();
+	printk(6, "hifs initialized");
+	file_t hifs_hi = read("/hifs/hi", 3);
+	printk(6, "/hifs/hi read: %d size, contents %s", hifs_hi.size, hifs_hi.data ? hifs_hi.data : "(null pointer)");
 	printk(7, "Hello, World!");
 #ifdef CONFIG_LOGO
 #if CONFIG_LOGO
@@ -316,7 +315,6 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	kernel_boot_ticks = uptime_ticks;
 	//panic("This PC is ass."); // compile with this uncommented to prank people :)
 	printf("Running shell\n");
-
 	shell_init();
 	while (1) {
 		shell_cmd_loop();

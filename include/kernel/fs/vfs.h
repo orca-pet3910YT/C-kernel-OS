@@ -27,4 +27,5 @@ int write(file_t *file_obj, void *data, int size);
 int mount(struct filesystem *fs, char *path);
 int list_dir(char *directory, char **output);
 int vfs_shutdown();
+static file_t null_file = {.offset = 0, .data = 0, .size = 0, .name = {0}};
 #endif

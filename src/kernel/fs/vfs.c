@@ -109,23 +109,30 @@ file_t read(char *path, uint32_t size) {
 	file_obj.offset = 0;
 	for (int i = 0; i < MAX_MOUNT; i++) {
 		if (mounts[i].fs && mounts[i].fs->read) {
-			if (strncmp(path, mounts[i].path, strlen(mounts[i].path)-1) != 0) continue;
-			//char *filepath = path;
-			//filepath += strlen(mounts[i].path);
-			//if (*filepath != '/') filepath = strcat(root_str, filepath);
-			//file_obj.name = filepath;
-			char filepath[256];
+			if (strncmp(path, mounts[i].path, strlen(mounts[i].path)) != 0) continue;
+			char filepath[512];
 			strcpy(filepath, path+strlen(mounts[i].path));
 			if (*filepath != '/') {
 				char tmp[256] = "/";
 				strcat(tmp, filepath);
 				strcpy(filepath, tmp);
 			}
+			char *rel = path+strlen(mounts[i].path);
+			if (!*rel) {
+				strcpy(file_obj.name, "/");
+			} else if (*rel == '/') {
+				strcpy(file_obj.name, rel);
+			} else {
+				file_obj.name[0] = '/';
+				file_obj.name[1] = 0;
+				strcat(file_obj.name, rel);
+			}
 			strncpy(file_obj.name, filepath, sizeof(file_obj.name)-1);
 			file_obj.name[sizeof(file_obj.name)-1] = 0;
 			file_obj.size = size;
 			file_t file_read = mounts[i].fs->read(&file_obj);
 			if (file_read.offset == 0 && file_read.data == (void*)0 && file_read.size == 0 && file_read.name == (char*)0) continue;
+			if (!file_read.data) continue;
 			for (int j = 0; j < (int)sizeof(root_str); j++) root_str[j] = 0;
 			return file_read;
 		}
@@ -152,6 +159,8 @@ int list_dir(char *directory, char **output) {
 	for (int i = 0; i < MAX_MOUNT; i++) {
 		if (mounts[i].fs && mounts[i].fs->list_dir) {
 			if (strncmp(directory, mounts[i].path, strlen(mounts[i].path)-1) != 0) continue;
+			directory += strlen(mounts[i].path);
+			if (*directory != '/') *directory = '/', *(directory+1) = 0;
 			return mounts[i].fs->list_dir(directory, output);
 		}
 	}
