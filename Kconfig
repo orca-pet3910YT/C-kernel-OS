@@ -45,11 +45,6 @@ config LOGO
 config GLOGO
 	bool "Show the CkOS official logo at bootup"
 	default y
-config LOGLEVEL
-	int "Default loglevel (0-7)"
-	default 7
-comment "Warning: it is harder to debug when loglevel is set low"
-	depends on LOGLEVEL < 4
 endmenu
 menu "Devices"
 comment "Warning: no input device is enabled"
@@ -77,4 +72,17 @@ config PCSPK
 	default y
 comment "Not to confuse with a speaker, like audio jack or optical cables."
 endmenu
-
+menu "Kernel hacking/debugging"
+config HIFS
+	bool "Compile hifs for multi-partition VFS testing"
+	default n
+config LOGLEVEL
+	int "Default loglevel (0-7)"
+	default 7
+config MULTIBOOT2_TAGS
+	bool "Display Multiboot2 tags during read"
+	default n
+config MEMORY_SECRET
+	bool "Display pointers during boot"
+	default n
+endmenu

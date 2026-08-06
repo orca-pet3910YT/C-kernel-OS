@@ -96,6 +96,7 @@ void shell_cmd_loop(void)
 			"setcan   -- sets canonical_md to true\n"
 			"setncan  -- sets canonical_md to false\n"
 			"crash    -- generates an exception for testing\n"
+			"ls       -- list files\n"
 		);
 	} 
 	

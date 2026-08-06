@@ -3,10 +3,12 @@
  * returns exactly one file /hi containing "hi\n", or at least should
  */
 
+#include <generated/config.h>
+#if CONFIG_HIFS
 #include <fs/vfs.h>
 #include <string.h>
 #include <error.h>
-#include <drivers/video/vga.h>
+// #include <drivers/video/vga.h>
 
 static file_t hifs_read(file_t *file_read) {
 	if (strcmp(file_read->name, "/hi") == 0) {
@@ -50,7 +52,9 @@ void hifs_init() {
 	//strcpy("/hifs", hifs_mount.path);
 	//hifs_fs.mountpoint = hifs_mount;
 	//hifs_mount.fs = hifs_fs;
-	printk(4, "%x %x %x %x %x", hifs_read, hifs_write, hifs_mount, hifs_unmount, hifs_list_dir);
 	register_fs(&hifs_fs);
 	mount(&hifs_fs, "/hifs");
 }
+#else
+void hifs_init() {}
+#endif

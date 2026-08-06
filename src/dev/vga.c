@@ -61,13 +61,11 @@ void clear_screen_vga() {
 }*/
 
 void set_color(uint32_t bg, uint32_t fg) {
-#ifdef CONFIG_COLOR_FB_TEXT
 #if CONFIG_COLOR_FB_TEXT
 	bg_color = bg; fg_color = fg;
 #else
 	(void)bg; (void)fg;
 #endif
-#endif /* CONFIG_COLOR_FB_TEXT */
 }
 
 void set_ftimestamp(double timestamp, char* buf) {
@@ -93,49 +91,21 @@ void set_ftimestamp(double timestamp, char* buf) {
 #endif /* CONFIG_PRINTK_TIME */
 }
 
-/*void scroll_once() {
-	//int index = 0;
-	for (int i = 0; i < 24; i++) {
-		for (int j = 0; j < 80; j++) {
-			buffer[i*80+j] = buffer[(i+1)*80+j];
-		}
-	}
-	for (int i = 0; i < 80; i++) {
-		buffer[24*80+i] = (color << 8) + 0x20;
-	}
-	return;
-}*/
-
 int putc(int c) {
 	if (c == -1) return -1;
 	if (!c) return 0;
-	//set_color(c); // don't uncomment unless you love unicorn puke
 	if (c == '\n') {
 		//col = 0; row++;
 		if (serial_out) sputc('\n');
 	} else if (c == '\b') {
-		//if (col == 0 && row == 0) {
-			/*col = 79; row--;
-			while (buffer[(row*80+col)-1] == 0x0720 && col != 0) {
-				col--;
-			}*/ // text editor style
-			//return 0;
-		//} else if (col > 0 && row >= 0 /*2*/) {
-			//col--; buffer[row*80+col] = (color << 8) | ' ';
 			if (serial_out) sputs("\b \b");
-		/*} else if (col == 0 && row > 0) {
-			col = 79; row--;
-			buffer[row*80+col] = (color << 8) | ' ';
-		}*/
 	} else if (c == 0x1E) { // up
 		return 0;
 	} else if (c == 0x1F) { // down
 		return 0;
 	} else if (c == 0x1A) { // left
-		/*if (col < 2) return 0;
-		col--; set_cursor_pos(row, col); return 0x1A;*/
 		return 0;
-	} else if (c == 0x1B) {
+	} else if (c == 0x1B) { // right?
 		return 0;
 	} else if (c == '\t') {
 		for (int i = 0; i < tab_indent; i++) {
@@ -143,59 +113,12 @@ int putc(int c) {
 		}
 		if (serial_out) sputc('\t');
 	} else {
-		//buffer[row*80+col] = (color << 8) | c; col++;
 		if (serial_out) sputc(c);
 	}
-	/*if (col >= 80) {
-		col = 0; row++;
-	}
-	if (row >= 25) {
-		scroll_once(); //clear_screen();
-		row = 24; // 0 // 24
-		//col = 0;
-	}*/
-	//set_cursor_pos(row, col);
 	if (font_initialized) put_char(c);
-	//if (serial_out) sputc(c);
 	return c;
 }
 
-// put character extended
-
-/*void putce(char c) {
-	if (c == '\n') {
-		col = 0; row++;
-		sputc(c);
-	} else if (c == '\b') {
-		if (col == 0 && row == 0) {*/
-			/*col = 79; row--;
-			while (buffer[(row*80+col)-1] == 0x0720 && col != 0) {
-				col--;
-			}*/ // text editor style
-		/*} else if (col == 0 && row == 0) {
-			return;
-		} else if (col > 2) {
-			col--; buffer[row*80+col] = (0x07 << 8) | ' ';
-			sputc(c);
-		}
-	} else if (c == '\t') {
-		for (int i = 0; i < tab_indent; i++) {
-			putc(' ');
-		}
-	} else {
-		buffer[row*80+col] = (0x07 << 8) | c; col++;
-		sputc(c);
-	}
-	if (col >= 80) {
-		col = 0; row++;
-	}
-	if (row >= 25) {
-		scroll_once(); //clear_screen();
-		row = 24; // 0 // 24
-		//col = 0;
-	}
-	set_cursor_pos(row, col);
-}*/
 
 int puts(const char *s) {
 	while (*s) {
@@ -252,7 +175,7 @@ int cprintf(const char *restrict format, va_list parameters) {
 			if (!print(buf, strlen(buf))) return -1;
 			written += strlen(buf);
 		} else if (*format == 'u') {
-			format++; uint32_t value = va_arg(parameters, int);
+			format++; uint32_t value = va_arg(parameters, unsigned int);
 			char buf[12]; itoa(value, buf);
 			if (maxrem < strlen(buf)) return -1;
 			if (!print(buf, strlen(buf))) return -1;
@@ -339,7 +262,6 @@ int printk(unsigned int pass_loglevel, const char* str, ...) {
 	int r = cprintf(buf, params);
 	va_end(params);
 	return r;
-	//sputs(buf); // this relies on early serial logging. DO NOT USE printk BEFORE INITIALIZING SERIAL!
 }
 
 int cprintk(unsigned int pass_loglevel, const char *str, va_list params) {

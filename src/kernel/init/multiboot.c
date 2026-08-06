@@ -218,9 +218,10 @@ void fb_init(fb_info_t *fbi, char can_font_init) {
 		font_init();
 		font_initialized = 1;
 	}
+#if !MEMORY_SECRET
 	printk(6, "Framebuffer is at %x", fbi->fb);
+#endif
 	printk(6, "Size: %dx%dx%d", fbi->w, fbi->h, fbi->bpp);
-	printk(6, "Multiboot flags: %x", fbi->flags);
 	if (font_initialized) printk(6, "Framebuffer font system initialized");
 	else printk(6, "Framebuffer font system NOT initialized");
 	return;
@@ -244,9 +245,10 @@ void draw_logo(fb_info_t *fbi) {
 #endif
 
 void fb_debug_print(fb_info_t *fbi) {
+#if !CONFIG_MEMORY_SECRET
 	printk(6, "Framebuffer is at %x", fbi->fb);
+#endif
 	printk(6, "Size: %dx%dx%d", fbi->w, fbi->h, fbi->bpp);
-	printk(6, "Multiboot flags: %x", fbi->flags);
 	if (font_initialized) printk(6, "Framebuffer font system initialized");
 	else printk(6, "Framebuffer font system NOT initialized");
 }
