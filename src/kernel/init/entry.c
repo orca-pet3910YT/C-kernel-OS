@@ -85,21 +85,14 @@ extern void _start();
 void debug_info_print() {
 	printk(6, ver); printk(6, "Build #%d by %s", BUILD_NUMBER, CKOS_BLD);
 	printk(6, "Git source tree commit hash: %s", GIT_SOURCE_HASH);
-#if !CONFIG_MEMORY_SECRET
 	printk(6, "Kernel entry offset: %x, image offset: %x", _start, 1024*1024);
-#endif
 	printk(6, "Compiler: %s", compiler);
 	if (c_version) printk(6, "Compiled with C %d", c_version);
 	if (compiler_ver[0] || compiler_ver[1] || compiler_ver[2]) printk(6, "%s %d.%d.%d", compiler, __GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__);
 	printk(7, "Made by orca.pet3910YT with %s", "\x03");
 }
 
-void vga_old_putc(char c, short loc) {
-	((uint16_t*)0xB8000)[loc] = 0x0700 | c;
-}
-
 struct cpufreq_s *cpufreq;
-char *no_fb_err = "A framebuffer is required to continue. If you have serial, boot logs will go there.";
 char command[256] = {0};
 
 extern uint32_t page_directory;
@@ -167,7 +160,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	char fb_reserved = 0;
 	// while the current tag pointer isn't past the end
 	while (ptr < (uint8_t*)mbi+mbi_size) {
-#if CONFIG_MULTIBOOT2_TAGS && !CONFIG_MEMORY_SECRET
+#if CONFIG_MULTIBOOT2_TAGS
 		printk(7, "tag type %d size %d ptr %x", *(uint32_t*)ptr, *(uint32_t*)(ptr+4), ptr);
 #endif
 		if (!*(uint32_t*)ptr) break;
@@ -179,7 +172,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 			fb_info->h = *(uint32_t*)(ptr+24);
 			if (fb_info->fb && !fb_reserved) pmm_deinit_region((uint32_t)fb_info->fb, fb_info->pitch*fb_info->h), fb_reserved = true;
 			fb_info->bpp = *(uint8_t*)(ptr+28);
-			printk(4, "fb: %x: %dx%dx%d (%d pitch) reserved: %d", CONFIG_MEMORY_SECRET ? 0 : fb_info->fb, fb_info->w, fb_info->h, fb_info->bpp, fb_info->pitch, fb_reserved);
+			printk(4, "fb: %x: %dx%dx%d (%d pitch) reserved: %d", fb_info->fb, fb_info->w, fb_info->h, fb_info->bpp, fb_info->pitch, fb_reserved);
 			if (fb_info->bpp == 32) can_font_init = 1;
 		} else if (*(uint32_t*)ptr == 1) {
 #ifndef CONFIG_CMDLINE_STR
@@ -212,9 +205,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 				if (entry_type == 1) {
 					uint32_t base_low = (uint32_t)base;
 					uint32_t len_low = (uint32_t)len;
-#if !CONFIG_MEMORY_SECRET
 					printk(4, "base_low: %x, len_low: %x", base_low, len_low);
-#endif
 					uint32_t block_highest_address = base_low+len_low;
 					if (max_ram_detected < block_highest_address) max_ram_detected = block_highest_address;
 					if (base_low < 0x00100000) {
@@ -246,9 +237,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	draw_logo(fb_info);
 	memory_size_total = max_ram_detected;
 	printk(0, "Hello, hello!");
-#if !CONFIG_MEMORY_SECRET
 	printk(0, "%x %x %x %x", (uint32_t)mbi_old, (uint32_t)mbi, (uint32_t)ptr, (uint32_t)can_font_init);
-#endif
 	gdt_init();
 	printk(6, "GDT initialized");
 	pic_remap();
@@ -300,7 +289,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	init_cpio();
 	printk(4, "Initialized cpio filesystem");
 	file_t init = read("/init", 5);
-	printk(4, "Run /init (%d bytes at %x)", init.size, CONFIG_MEMORY_SECRET ? 0 : init.data);
+	printk(4, "Run /init (%d bytes at %x)", init.size, init.data);
 	brainfuck_interpret(init.data, init.size);
 	printk(4, "write code -%d", -write(&init, "Hello, World!", 13));
 	file_t welcome_banner = read("/welcome", -1);

@@ -82,7 +82,4 @@ config LOGLEVEL
 config MULTIBOOT2_TAGS
 	bool "Display Multiboot2 tags during read"
 	default n
-config MEMORY_SECRET
-	bool "Display pointers during boot"
-	default n
 endmenu
