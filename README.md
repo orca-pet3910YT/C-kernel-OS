@@ -5,6 +5,25 @@ The features in this OS are... pretty lacking, but that'll be fixed over time.
 
 [![Compile CkOS](https://github.com/orca-pet3910YT/C-kernel-OS/actions/workflows/compile.yml/badge.svg)](https://github.com/orca-pet3910YT/C-kernel-OS/actions/workflows/compile.yml)
 
+## The project
+CkOS is a project made primarily for fun and (mostly) learning.
+
+The project has:
+
+- Paging and a PMM
+- A rather basic kernel shell
+- Time "management" (uptime and delay)
+- Configuration
+- Customizable logging
+
+and uses:
+
+- Multiboot2
+- SSE and SSE2
+- C with assembly
+- x86-32
+- No runtime libraries (basic crt\* functionality is built in)
+
 ## Build requirements (Debian apt package names, check for your distro)
 - `clang`
 - `binutils-i686-linux-gcc`
