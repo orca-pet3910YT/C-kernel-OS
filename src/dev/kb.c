@@ -52,35 +52,6 @@ void kb_init() {
 #endif
 }
 
-/*void set_kb_light(char capslock, char numlock, char scrolllock) {
-	__asm__ volatile ("cli");
-	unsigned char data;
-	int timeout = 100000;
-	while ((inb(0x64) & 0x02) && --timeout);
-	if (!timeout) { sti(); return; }
-	outb(0x60, 0xED);
-	timeout = 100000;
-	while (timeout--) {
-		if (!(inb(0x64) & 0x01)) continue;
-		data = inb(0x60);
-		if (data == 0xFA) break;
-		if (data == 0xFE) outb(0x60, 0xED);
-	}
-	if (!timeout) { sti(); return; }
-	timeout = 100000;
-	while ((inb(0x64) & 0x02) && --timeout);
-	if (!timeout) { sti(); return; }
-	outb(0x60, 0 | ((capslock & 0x01) << 2) | ((numlock & 0x01) << 1) | (scrolllock & 0x01));
-	timeout = 100000;
-	while (timeout--) {
-		if (!(inb(0x64) & 0x01)) continue;
-		data = inb(0x60);
-		if (data == 0xFA) break;
-		if (data == 0xFE) outb(0x60, 0 | ((capslock & 0x01) << 2) | ((numlock & 0x01) << 1) | (scrolllock & 0x01));
-	}
-	__asm__ volatile ("sti");
-}*/
-
 void kb_flush_buf() {
 	for (int i = 0; i < 16; i++) {
 		uint8_t status = inb(0x64);
@@ -152,22 +123,3 @@ uint8_t kb_get_scancode() {
 	return 0;
 #endif
 }
-
-/*unsigned char loop_until_keypress_e() {
-	for (;;) {
-		char c = scancode_to_c(kb_get_scancode());
-		if (c) return c;
-		c = sgetc();
-		if (c) return c;
-	}
-}
-
-unsigned char loop_until_keypress() {
-	for (;;) {
-		char c = scancode_to_c(kb_get_scancode());
-		if (c) return c;
-		if (!serial_in) return 0;
-		c = sgetc();
-		if (c) return c;
-	}
-}*/

@@ -31,34 +31,9 @@ E - yellow - 0x00FFFF55
 F - white - 0x00FFFFFF
 */
 
-//unsigned char color = 0x07;
-//extern uint32_t bg_color;
-//extern uint32_t fg_color;
-//uint32_t bg_color = 0x00000000;
-//uint32_t fg_color = 0x00DFDFDF;
 int row = 0;
 int col = 0;
-//static uint16_t* buffer = (uint16_t*)0xB8000;
 int tab_indent = 4;
-
-/*void set_cursor_pos(int row, int col) {
-	unsigned short pos = row*80+col;
-	outb(0x3D4, 0x0F);
-	outb(0x3D5, (unsigned char)(pos & 0xFF));
-	outb(0x3D4, 0x0E);
-	outb(0x3D5, (unsigned char)((pos >> 8) & 0xFF));
-}
-
-void set_color(unsigned char vga_color) {
-	color = vga_color;
-}
-
-void clear_screen_vga() {
-	for (int i = 0; i < 2000; i++) {
-		buffer[i] = (color << 8) + 0x20;
-	}
-	row = 0; col = 0;
-}*/
 
 void set_color(uint32_t bg, uint32_t fg) {
 #if CONFIG_COLOR_FB_TEXT
@@ -94,10 +69,7 @@ void set_ftimestamp(double timestamp, char* buf) {
 int putc(int c) {
 	if (c == -1) return -1;
 	if (!c) return 0;
-	if (c == '\n') {
-		//col = 0; row++;
-		if (serial_out) sputc('\n');
-	} else if (c == '\b') {
+	if (c == '\b') {
 			if (serial_out) sputs("\b \b");
 	} else if (c == 0x1E) { // up
 		return 0;
