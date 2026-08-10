@@ -46,18 +46,20 @@ void font_init() {
 }
 
 void _putc(unsigned char c, int x, int y, uint32_t fg, uint32_t bg) {
-	uint8_t *glyph = (uint8_t*)_binary_bin_default_8x16_psf_start+4+(c*font_head->char_size);
-	for (int r = 0; r < font_head->char_size; r++) {
-		uint32_t *row = framebuffer_info->fb+(y+r)*pitchp;
-		uint8_t bits = glyph[r];
-		row[x] = (bits & 0x80) ? fg : bg;
-		row[x+1] = (bits & 0x40) ? fg : bg;
-		row[x+2] = (bits & 0x20) ? fg : bg;
-		row[x+3] = (bits & 0x10) ? fg : bg;
-		row[x+4] = (bits & 0x08) ? fg : bg;
-		row[x+5] = (bits & 0x04) ? fg : bg;
-		row[x+6] = (bits & 0x02) ? fg : bg;
-		row[x+7] = (bits & 0x01) ? fg : bg;
+	if (c) {
+		uint8_t *glyph = (uint8_t*)_binary_bin_default_8x16_psf_start+4+(c*font_head->char_size);
+		for (int r = 0; r < font_head->char_size; r++) {
+			uint32_t *row = framebuffer_info->fb+(y+r)*pitchp;
+			uint8_t bits = glyph[r];
+			row[x] = (bits & 0x80) ? fg : bg;
+			row[x+1] = (bits & 0x40) ? fg : bg;
+			row[x+2] = (bits & 0x20) ? fg : bg;
+			row[x+3] = (bits & 0x10) ? fg : bg;
+			row[x+4] = (bits & 0x08) ? fg : bg;
+			row[x+5] = (bits & 0x04) ? fg : bg;
+			row[x+6] = (bits & 0x02) ? fg : bg;
+			row[x+7] = (bits & 0x01) ? fg : bg;
+		}
 	}
 }
 
