@@ -92,7 +92,7 @@ run:
 
 run-vnc:
 	@echo "Running in QEMU (VNC 1)"
-	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial stdio -display vnc=:0 -d int -cpu max
+	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial stdio -display vnc=:0 -cpu max
 
 run-debug:
 	@echo "Running in QEMU (debugged)"

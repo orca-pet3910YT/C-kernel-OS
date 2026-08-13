@@ -142,6 +142,10 @@ void put_char(char c) {
 	}
 	if (c == '\t') {
 		tx = (tx + T_TABWIDTH) & ~(T_TABWIDTH - 1);
+		if (tx >= t_width) {
+			tx = 0; ty++;
+		}
+		if (ty >= t_height) scroll_term();
 		return;
 	}
 	if (ty >= t_height) scroll_term();
