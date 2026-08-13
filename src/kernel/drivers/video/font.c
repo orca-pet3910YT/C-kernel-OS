@@ -81,9 +81,11 @@ void clear_screen() {
 	for (int x = 0; x < t_width; x++) {
 		for (int y = 0; y < t_height; y++) {
 			int offset = y*t_width+x;
+			unsigned char old_char = terminal[offset].c;
 			terminal[offset].c = 0x20;
 			terminal[offset].fg = fg_color;
 			terminal[offset].bg = bg_color;
+			terminal[offset].dirty = old_char != ' ';
 		}
 	}
 	redraw_term(); tx = 0; ty = 0;
