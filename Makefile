@@ -86,15 +86,19 @@ clean:
 	@echo "  CLEAN  iso/*.elf"; rm -f iso/*.elf
 	@echo "  CLEAN  include/generated"; rm -rf include/generated
 
-run:
+run: iso
 	@echo "Running in QEMU"
+	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -cpu max
+
+run-nographic: iso
+	@echo "Running in QEMU (NOGRAPHIC)"
 	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -nographic -cpu max
 
-run-vnc:
+run-vnc: iso
 	@echo "Running in QEMU (VNC 1)"
 	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -serial stdio -display vnc=:0 -cpu max
 
-run-debug:
+run-debug: iso
 	@echo "Running in QEMU (debugged)"
 	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -cpu max -s -S
 
