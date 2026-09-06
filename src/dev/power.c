@@ -7,10 +7,6 @@
 #include <drivers/timers/pit.h>
 #include <fs/vfs.h>
 
-static inline void outw(uint16_t port, uint16_t value) {
-	__asm__ volatile ("outw %0, %1" : : "a"(value), "Nd"(port));
-}
-
 void system_shutdown() {
 	printk(4, "power: The system will shut down!");
 	vfs_shutdown();

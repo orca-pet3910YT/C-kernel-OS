@@ -28,6 +28,7 @@
 #include <sys/test.h>
 #include <arch/i386/pmm.h>
 #include <fs/hifs.h>
+#include <drivers/bus/pci.h>
 
 static fb_info_t fb_info_real;
 static color_info_t color_info_real;
@@ -300,6 +301,7 @@ void _Noreturn kmain(int magic, uint32_t *mbi) {
 	file_t hifs_hi = read("/hifs/hi", 3);
 	printk(6, "/hifs/hi read: %d size, contents %s", hifs_hi.size, hifs_hi.data ? hifs_hi.data : "(null pointer)");
 #endif
+	pci_check_all_buses();
 	printk(7, "Hello, World!");
 #ifdef CONFIG_LOGO
 #if CONFIG_LOGO
