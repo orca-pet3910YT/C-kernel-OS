@@ -10,7 +10,6 @@
 #define MAX_FD 256
 
 static filesystem_t filesystems[MAX_FS];
-static int fs_count = 0;
 static mount_t mounts[MAX_MOUNT];
 static int mount_count = 0;
 // for the future
@@ -36,7 +35,6 @@ int register_fs(filesystem_t *fs) {
 			return -EUNAVAIL;
 		}
 		filesystems[free_fs_index] = *fs;
-		fs_count++;
 	}
 	return 0;
 }

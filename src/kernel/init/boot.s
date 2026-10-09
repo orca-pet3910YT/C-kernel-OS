@@ -86,38 +86,7 @@ _start:
 	# initialize the FPU
 	fwait
 	fninit
-	call gdt_init # initialize GDT for paging to work
-	mov $page_directory, %edi
-	mov $1024, %ecx
-	xorl %eax, %eax
-	rep stosl
-	mov $page_table_0, %edi
-	mov $1024, %ecx
-	xorl %eax, %eax
-	rep stosl
-	mov $page_table_0, %eax
-	xor %ebx, %ebx
-	mov $1024, %ecx
-	mov $page_table_0, %edi
-	# no need to explain what this part does
-.fill_page_table:
-	mov %ebx, %eax
-	orl $3, %eax
-	mov %eax, (%edi)
-	add $4096, %ebx
-	add $4, %edi
-	loop .fill_page_table
-	mov $page_table_0, %eax
-	orl $3, %eax
-	mov %eax, (page_directory)
-	# load the page directory
-	mov $page_directory, %eax
-	mov %eax, %cr3
-	mov %cr0, %eax
-	orl $0x80000001, %eax
-	mov %eax, %cr0
-	ljmp $0x08, $.cont
-.cont:
+	call gdt_init # initialize GDT ~for paging to work~ not valid reason
 	# push the arguments
 	push %edx # mbi
 	push %esi # magic
