@@ -88,7 +88,7 @@ clean:
 
 run: iso
 	@echo "Running in QEMU"
-	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -cpu max
+	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -cpu max -device VGA -serial stdio
 
 run-nographic: iso
 	@echo "Running in QEMU (NOGRAPHIC)"

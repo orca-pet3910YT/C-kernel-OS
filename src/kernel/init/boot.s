@@ -58,6 +58,8 @@ stack_bottom:
 .skip 16384
 .align 16
 stack_top:
+.globl kernel_stack
+kernel_stack:
 
 .section .text
 .global _start

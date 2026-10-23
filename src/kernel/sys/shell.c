@@ -16,6 +16,7 @@
 #include <sys/multiboot.h>
 #include <fs/vfs.h>
 #include <math/math.h>
+#include <arch/i386/usermode.h> // for testing
 
 #define BUFFER_WIDTH 2048
 /* if true the typed word only shows after the user does EOF or a newline
@@ -248,6 +249,9 @@ void shell_cmd_loop(void)
 	}
 	else if (strcmp(cmd_buffer, "memsize") == 0) {
 		printf("Total memory size: %d bytes (%d MB)\n", memory_size_total, memory_size_total/1024/1024);
+	}
+	else if (strcmp(cmd_buffer, "usermode") == 0) {
+		jump_usermode();
 	}
 
 	else {

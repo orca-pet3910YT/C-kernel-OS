@@ -14,7 +14,7 @@ typedef struct {
 	unsigned char c;
 } term_cell_t;
 
-static term_cell_t terminal[350*100] = {0};
+static term_cell_t terminal[450*200] = {0};
 int t_width = 0;
 int t_height = 0;
 int tx = 0; int ty = 0;
@@ -112,7 +112,7 @@ __attribute__((target("sse2"))) void flush_term() {
 	}
 }
 
-__attribute__((target("sse2"))) void scroll_term() {
+void scroll_term() {
 	drv_dbg[0] = uptime_ticks;
 	term_cell_t *term = terminal;
 	memmove(term, term+t_width, sizeof(term_cell_t)*t_width*(t_height-1));
