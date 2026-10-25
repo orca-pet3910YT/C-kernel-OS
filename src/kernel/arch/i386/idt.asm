@@ -15,6 +15,30 @@ isr%1:
 	jmp common_isr
 %endmacro
 
+global syscall
+extern handle_syscall
+syscall:
+	cli
+	push ebp
+	push esi
+	push edi
+	push edx
+	push ecx
+	push ebx
+	push eax
+	push esp
+	call handle_syscall
+	add esp, 4 ; we do not need the saved esp anymore
+	pop eax
+	pop ebx
+	pop ecx
+	pop edx
+	pop edi
+	pop esi
+	pop ebp
+	;add esp, 8
+	iret
+
 extern isr_handler
 
 common_isr:

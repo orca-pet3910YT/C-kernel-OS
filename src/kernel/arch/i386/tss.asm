@@ -1,5 +1,5 @@
 global flush_tss
 flush_tss:
-	mov ax, (5*8) | 0;
+	mov ax, (5*8) | 3;
 	ltr ax
 	ret

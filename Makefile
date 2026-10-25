@@ -100,7 +100,7 @@ run-vnc: iso
 
 run-debug: iso
 	@echo "Running in QEMU (debugged)"
-	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -cpu max -s -S
+	@qemu-system-i386 -cdrom build/boot.iso -boot order=dca -nic none -cpu max -s -S -d int
 
 menuconfig:
 	@kconfig-mconf Kconfig

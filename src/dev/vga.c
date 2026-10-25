@@ -101,7 +101,7 @@ int puts(const char *s) {
 
 int print(const char *s, int length) {
 	for (int i = 0; i < length; i++) {
-		if (putc(s[i]) == -1) return 0;
+		if (putc(s[i]) == -1) { flush_term(); return 0; }
 	}
 	return 1;
 }

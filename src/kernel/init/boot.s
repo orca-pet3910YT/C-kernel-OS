@@ -85,15 +85,12 @@ _start:
 	cli
 	cld
 	nopw %cs:0x0(%eax,%eax,1)
+	push %edx # multiboot2 magic
+	push %esi # pointer
 	# initialize the FPU
 	fwait
 	fninit
 	call gdt_init # initialize GDT ~for paging to work~ not valid reason
-	# push the arguments
-	push %edx # mbi
-	push %esi # magic
-	xorl %edx, %edx
-	xorl %esi, %esi
 	call kmain
 	push $stat_kmain_return
 	call panic

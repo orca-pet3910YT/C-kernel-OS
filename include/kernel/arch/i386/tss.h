@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <arch/i386/gdt.h>
 #ifndef TSS_H
 #define TSS_H
 typedef struct tss_entry {
@@ -30,4 +31,7 @@ typedef struct tss_entry {
 	uint16_t trap;
 	uint16_t iomap_base;
 } __attribute__((packed)) tss_entry_t;
+//void write_tss(gdt_entry_bits*);
+void tss_init(void);
+void flush_tss(void);
 #endif

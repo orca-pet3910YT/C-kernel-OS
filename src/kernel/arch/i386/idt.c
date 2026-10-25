@@ -21,6 +21,7 @@ static void idt_set_gate(uint8_t n, uint32_t b, uint16_t sel, uint8_t flags) {
 	//printk("idt: idt %x: hi=%x lo=%x sel=%x flags=%x", n, idt_ents[n].base_high, idt_ents[n].base_low, sel, flags);
 }
 
+void syscall(void); // i'm kind of stressed
 void init_idt() {
 	printk(7, "idt: idt_entry_t: %x", sizeof(idt_entry_t));
 	idt_ptr.limit = sizeof(idt_entry_t)*256-1;
@@ -81,6 +82,7 @@ void init_idt() {
 	idt_set_gate(45, (uint32_t)isr45, 0x08, 0x8E);
 	idt_set_gate(46, (uint32_t)isr46, 0x08, 0x8E);
 	idt_set_gate(47, (uint32_t)isr47, 0x08, 0x8E);
+	idt_set_gate(0x80, (uint32_t)syscall, 0x08, 0xEE);
 
 	load_idt((uint32_t)&idt_ptr);
 }
