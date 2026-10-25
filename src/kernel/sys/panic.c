@@ -93,7 +93,7 @@ void panic(const char *msg, ...) {
 	va_list params;
 	va_start(params, msg);
 #if CONFIG_PRETTY_PANIC
-	set_color(0x001FFF1F, 0x00000000); // 0x000000AA, 0x00FFFFFF
+	set_color(0x001A237E, 0x00FFFFFF); // 0x000000AA, 0x00FFFFFF
 	clear_screen();
 	tx = 5; ty = 5;
 	printf("This machine ran into an irrecoverable error. See logs below for more information.\n");
